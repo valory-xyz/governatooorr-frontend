@@ -24,6 +24,7 @@ const delegateeAddress = "0x04C06323Fe3D53Deb7364c0055E1F68458Cc2570";
 const serviceEndpoint = "https://gateway.autonolas.tech/governatoooorr/api";
 
 const getTokenContractAbi = async (tokenAddress) => {
+  // TODO: Get new API key
   const response = await axios.get(
     `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=2IWNZ26ZKHK5UXVUUV2JQ9N75XSMSBBTJV`
   );
