@@ -1,0 +1,109 @@
+body {
+  background-color: #000;
+  background-image: url("/images/terminator.jpg");
+  background-repeat: repeat;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  background-color: black;
+  border-bottom: 1px solid #d62068;
+  margin-bottom: 2rem;
+  color: #fff;
+  padding: 10px;
+}
+
+.navbar__logo {
+  justify-self: start;
+}
+
+.navbar__menu {
+  justify-self: center;
+}
+
+.navbar__login {
+  justify-self: end;
+}
+
+.dash {
+  background-color: #d62068 !important;
+}
+
+.card {
+  background-color: #051934;
+  border: 1px solid #d62068;
+  color: white;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.form-card {
+  max-width: 500px;
+}
+
+.content-card {
+  max-width: 1000px;
+}
+
+.u-text-align-center {
+  text-align: center;
+}
+
+/* Style the form and buttons */
+form {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 5px;
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input,
+label,
+button {
+  font-size: 18px;
+  margin: 10px;
+  color: white;
+}
+
+button {
+  background-color: var(--primary-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #ff6f6f;
+}
+
+/* Style the title */
+h1 {
+  font-size: 3em;
+  text-align: center;
+  text-shadow: 2px 2px #ff3d3d;
+  margin-bottom: 30px;
+}
+
+/* Style the footer */
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}

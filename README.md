@@ -1,6 +1,7 @@
-# Governatooorr frontend
+# Governatooorr Frontend
 
 ## Tech Stack
+
 - web3.js
 - ReactJS
 - NextJS

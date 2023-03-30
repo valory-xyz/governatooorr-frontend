@@ -133,7 +133,7 @@ export default function TokenAddress() {
   });
 
   if (loading) {
-    return <p style={{ textAlign: "center" }}>Loading...</p>;
+    return <div className="card form-card">Loading...</div>;
   }
 
   if (error) {
@@ -142,11 +142,7 @@ export default function TokenAddress() {
   }
 
   return account ? (
-    <div style={{ textAlign: "center" }}>
-      <Link href="/docs">Docs</Link>
-      <br />
-      <br />
-      <br />
+    <div className="card form-card u-text-align-center">
       <div>
         <b>Token to delegate</b>
       </div>
@@ -219,8 +215,6 @@ export default function TokenAddress() {
       <p>Donate ETH for gas: {delegateeAddress}</p>
     </div>
   ) : (
-    <div style={{ textAlign: "center" }}>
-      Connect wallet to delegate tokens to Governatooorr
-    </div>
+    <div className="card form-card">Connect wallet to delegate tokens</div>
   );
 }

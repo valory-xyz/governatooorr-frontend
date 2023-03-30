@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { Anchor, Typography, Grid } from 'antd/lib';
-import { get } from 'lodash';
-import Overview from './content/1_Overview';
-import { DOC_NAV, NavWrapper } from './helpers';
-import { Container, DocSection } from './styles';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { Anchor, Typography, Grid } from "antd/lib";
+import { get } from "lodash";
+import Overview from "./content/1_Overview";
+import { DOC_NAV, NavWrapper } from "./helpers";
+import { Container, DocSection } from "./styles";
 
 const { Title } = Typography;
 const { Link } = Anchor;
@@ -22,40 +22,25 @@ const Documentation = () => {
 
   useEffect(() => {
     const { asPath } = router;
-    const afterHash = asPath.split('#')[1];
-    setActiveNav(afterHash || get(DOC_NAV, `[${0}].id`) || '');
+    const afterHash = asPath.split("#")[1];
+    setActiveNav(afterHash || get(DOC_NAV, `[${0}].id`) || "");
   }, []);
 
   return (
-    <Container>
-      <Title>Docs</Title>
+    <div className="card content-card">
+      <Container>
+        <Title style={{ color: "white" }}>Docs</Title>
 
-      <DocSection isMobile={isMobile}>
-        <NavWrapper isMobile={isMobile}>
-          <div className="navigation-section">
-            {DOC_NAV.map(({ id: key, title }) => (
-              <Anchor
-                {...anchorCommonProps}
-                key={key}
-                className={`custom-nav-anchor ${
-                  key === activeNav ? 'custom-nav-anchor-active' : ''
-                }`}
-                onClick={() => setActiveNav(key)}
-              >
-                <Link href={`#${key}`} title={title} />
-              </Anchor>
-            ))}
+        <DocSection isMobile={isMobile}>
+          <div className="reading-section">
+            <Overview />
           </div>
-        </NavWrapper>
-
-        <div className="reading-section">
-          <Overview />
-        </div>
-      </DocSection>
-      <br />
-      <br />
-      <br />
-    </Container>
+        </DocSection>
+        <br />
+        <br />
+        <br />
+      </Container>
+    </div>
   );
 };
 

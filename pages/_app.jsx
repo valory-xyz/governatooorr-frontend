@@ -13,8 +13,7 @@ import Layout from "components/Layout";
 import { ApolloProvider } from "@apollo/client";
 import client from "../apollo-client.js";
 import initStore from "../store";
-
-require("../styles/antd.less");
+import "../styles/global.css";
 
 const getLibrary = (provider) => new Web3(provider);
 

@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import get from "lodash/get";
 import { setIsVerified } from "store/setup/actions";
 import Image from "next/image";
+import Navbar from "../Navbar";
 import { DiscordLink } from "../Home/common";
 import Login from "../Login";
 import Footer from "./Footer";
@@ -25,10 +26,7 @@ const LogoSvg = dynamic(() => import("common-util/SVGs/logo"));
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
 
-const menuItems = [
-  { key: "homepage", label: "Governatooorr" },
-  { key: "docs", label: "Docs" },
-];
+const menuItems = [{ key: "docs", label: "Docs" }];
 
 const NavigationBar = ({ children }) => {
   const screens = useBreakpoint();
@@ -80,7 +78,7 @@ const NavigationBar = ({ children }) => {
 
   const logo = (
     <Logo onClick={() => router.push("/")}>
-      <LogoSvg />
+      <img src="/images/logo.png" alt="logo" className="logo" />
     </Logo>
   );
 
@@ -100,31 +98,13 @@ const NavigationBar = ({ children }) => {
 
   return (
     <CustomLayout>
-      {/* <Header>
-        {logo}
+      <Navbar
+        logo={logo}
+        selectedMenu={selectedMenu}
+        handleMenuItemClick={handleMenuItemClick}
+        menuItems={menuItems}
+      />
 
-        <Menu
-          theme="light"
-          mode="horizontal"
-          selectedKeys={[selectedMenu]}
-          items={menuItems}
-          onClick={handleMenuItemClick}
-        />
-
-        {!screens.xs && (
-          <RightMenu>
-          </RightMenu>
-        )}
-      </Header> */}
-
-      <Link href="/">
-        <div style={{ marginBottom: "2rem", margin: "0 auto 2rem auto" }}>
-          <Image src="/images/governatooorr.png" width={600} height={350} />
-        </div>
-      </Link>
-      <div style={{ margin: "0 auto" }}>
-        <Login />
-      </div>
       <Content className="site-layout">
         <div className="site-layout-background">
           {!!screens.xs && (
