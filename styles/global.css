@@ -60,8 +60,22 @@ body {
   text-align: center;
 }
 
+.u-mb1 {
+  margin-bottom: 1rem;
+}
+
 .u-mb2 {
   margin-bottom: 2rem;
+}
+
+.ant-btn.ant-btn-primary[disabled] {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: gray;
+}
+
+.ant-btn.ant-btn-primary[disabled]:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: gray;
 }
 
 .ant-btn.ant-btn-primary {
