@@ -141,7 +141,7 @@ export default function TokenAddress() {
     return null;
   }
 
-  return account ? (
+  return (
     <>
       <div className="card form-card  u-mb2">
         <div>
@@ -205,9 +205,12 @@ export default function TokenAddress() {
           type="primary"
           onClick={() => handleDelegate()}
           loading={delegating}
+          disabled={!account}
+          className={account || "u-mb1"}
         >
           Delegate
         </Button>
+        {account || <div>To delegate, connect a wallet</div>}
       </div>
       <div className="card form-card u-mb2">
         <Link href="/docs">Docs</Link>
@@ -216,7 +219,5 @@ export default function TokenAddress() {
         Donate ETH for gas: {delegateeAddress}
       </div>
     </>
-  ) : (
-    <div className="card form-card">Connect wallet to delegate tokens</div>
   );
 }
