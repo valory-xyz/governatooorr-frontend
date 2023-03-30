@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
@@ -6,6 +7,7 @@ import { Layout, Menu, Grid, Result } from "antd/lib";
 import PropTypes from "prop-types";
 import get from "lodash/get";
 import { setIsVerified } from "store/setup/actions";
+import Image from "next/image";
 import { DiscordLink } from "../Home/common";
 import Login from "../Login";
 import Footer from "./Footer";
@@ -17,7 +19,6 @@ import {
   LoginXsContainer,
   SupportOnlyDesktop,
 } from "./styles";
-import Image from "next/image";
 
 const LogoSvg = dynamic(() => import("common-util/SVGs/logo"));
 
@@ -116,14 +117,11 @@ const NavigationBar = ({ children }) => {
         )}
       </Header> */}
 
-      {chainId}
-      <div style={{ marginBottom: "2rem", margin: "0 auto 2rem auto" }}>
-        <Image
-          src="/images/governatooorr.png"
-          width={600}
-          height={350}
-        />
-      </div>
+      <Link href="/">
+        <div style={{ marginBottom: "2rem", margin: "0 auto 2rem auto" }}>
+          <Image src="/images/governatooorr.png" width={600} height={350} />
+        </div>
+      </Link>
       <div style={{ margin: "0 auto" }}>
         <Login />
       </div>

@@ -18,22 +18,6 @@ export const DOC_NAV = [
     id: DOCS_SECTIONS.overview,
     title: 'Overview',
   },
-  {
-    id: DOCS_SECTIONS.actions,
-    title: 'Actions',
-  },
-  {
-    id: DOCS_SECTIONS.badge,
-    title: 'Badge',
-  },
-  {
-    id: DOCS_SECTIONS.leaderboard,
-    title: 'Leaderboard',
-  },
-  {
-    id: DOCS_SECTIONS['how-it-works'],
-    title: 'How It Works',
-  },
 ];
 
 /**

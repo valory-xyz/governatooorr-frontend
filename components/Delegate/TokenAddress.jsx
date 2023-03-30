@@ -1,8 +1,10 @@
 import { useQuery, gql } from "@apollo/client";
-import axios, { AxiosError } from "axios";
+import { Button, message } from "antd";
+import axios from "axios";
 import { getWeb3Details } from "common-util/Contracts";
 import { notifySuccess } from "common-util/functions";
 import { get } from "lodash";
+import Link from "next/link";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -20,14 +22,23 @@ const QUERY = gql`
   }
 `;
 
-const delegateeAddress = "0x04C06323Fe3D53Deb7364c0055E1F68458Cc2570";
-const serviceEndpoint = "https://gateway.autonolas.tech/governatoooorr/api";
+const delegateeAddress = "0x94825185b1dD96918635270ddA526254a0F2fbf1";
+const serviceEndpoint =
+  "https://WrithingDependentApplicationprogram.oaksprout.repl.co";
+
+const mockDelegateTokens = () =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      const mockTransactionId = "123123"; // Simulated transaction ID
+      console.log("Mock delegation successful, id:", mockTransactionId);
+      resolve(mockTransactionId);
+    }, 1000); // Simulate a delay in the response
+  });
 
 const getTokenContractAbi = async (tokenAddress) => {
-  // TODO: Get new API key
-  const response = await axios.get(
-    `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=2IWNZ26ZKHK5UXVUUV2JQ9N75XSMSBBTJV`
-  );
+  const etherscanApiUrl = `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
+
+  const response = await axios.get(etherscanApiUrl);
   return response.data.result;
 };
 
@@ -43,6 +54,7 @@ export default function TokenAddress() {
   );
   const [tokenContractAbi, setTokenContractAbi] = useState("");
   const [votingPreference, setVotingPreference] = useState("evil");
+  const [delegating, setDelegating] = useState(false);
 
   const account = useSelector((state) => get(state, "setup.account"));
 
@@ -71,7 +83,6 @@ export default function TokenAddress() {
         .send({ from: account })
         .then((response) => {
           notifySuccess("Tokens delegated");
-          console.log(response);
           const id = get(response, "events.Transfer.returnValues.id");
           resolve(id);
         })
@@ -82,27 +93,47 @@ export default function TokenAddress() {
     });
 
   const handleDelegate = async () => {
-    // const postPayload = {
-    //   address: account,
-    //   votingPreference,
-    // };
-    // axios
-    //   .post(serviceEndpoint, postPayload)
-    //   .then(function (response) {
-    //     console.log(response);
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error);
-    //   });
+    try {
+      setDelegating(true);
+
+      // const id = await delegateTokens();
+      const id = await mockDelegateTokens();
+
+      if (id) {
+        const postPayload = {
+          address: account,
+          delegatedToken: tokenAddress,
+          votingPreference,
+        };
+
+        axios
+          .post(`${serviceEndpoint}/submit-json`, postPayload)
+          .then((response) => {
+            console.log("Successfully posted object:", response);
+            message.success("Delegation complete!"); // Display success message
+          })
+          .catch((error) => {
+            console.error("Error posting object:", error);
+            message.error("Error: Could not complete delegation."); // Display error message
+          })
+          .finally(() => {
+            setDelegating(false);
+          });
+      }
+    } catch (e) {
+      console.error("Error occurred when delegating tokens:", e);
+      message.error("Error: Could not complete delegation."); // Display error message
+      setDelegating(false);
+    }
   };
 
-  const { data, loading, error } = useQuery(QUERY, {
+  const { loading, error } = useQuery(QUERY, {
     variables: { ids: [`eip155:1:${tokenAddress}`] },
     onCompleted: (data1) => handleQueryCompleted(data1),
   });
 
   if (loading) {
-    return <h2>Loading...</h2>;
+    return <p style={{ textAlign: "center" }}>Loading...</p>;
   }
 
   if (error) {
@@ -112,6 +143,10 @@ export default function TokenAddress() {
 
   return account ? (
     <div style={{ textAlign: "center" }}>
+      <Link href="/docs">Docs</Link>
+      <br />
+      <br />
+      <br />
       <div>
         <b>Token to delegate</b>
       </div>
@@ -124,7 +159,7 @@ export default function TokenAddress() {
           }
           onChange={handleTokenAddressChange}
         />
-        COMP (0xc00e94Cb662C3520282E6f5717214004A7f26888)
+        &nbsp;COMP
       </label>
       <br />
       <label>
@@ -136,7 +171,7 @@ export default function TokenAddress() {
           }
           onChange={handleTokenAddressChange}
         />
-        UNI (0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984)
+        &nbsp;UNI
       </label>
 
       <br />
@@ -153,7 +188,7 @@ export default function TokenAddress() {
             checked={votingPreference === "good"}
             onChange={handleVotingPreferenceChange}
           />
-          Good
+          &nbsp;Good
         </label>
         <br />
         <label>
@@ -163,20 +198,25 @@ export default function TokenAddress() {
             checked={votingPreference === "evil"}
             onChange={handleVotingPreferenceChange}
           />
-          Evil
+          &nbsp;Evil
         </label>
       </div>
 
       <br />
-      <br />
 
-      <button
-        className="ant-btn ant-btn-primary"
-        type="submit"
+      <Button
+        type="primary"
         onClick={() => handleDelegate()}
+        loading={delegating}
       >
         Delegate
-      </button>
+      </Button>
+
+      <br />
+      <br />
+      <br />
+
+      <p>Donate ETH for gas: {delegateeAddress}</p>
     </div>
   ) : (
     <div style={{ textAlign: "center" }}>
