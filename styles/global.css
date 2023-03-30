@@ -4,6 +4,7 @@ body {
   background-repeat: repeat;
   color: #fff;
   font-family: "Inter", sans-serif;
+  font-size: 1rem;
   margin: 0;
   padding: 0;
 }
@@ -21,6 +22,10 @@ body {
 
 .navbar__logo {
   justify-self: start;
+}
+
+.logo {
+  max-width: 250px;
 }
 
 .navbar__menu {
@@ -55,55 +60,31 @@ body {
   text-align: center;
 }
 
-/* Style the form and buttons */
-form {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 30px;
-  border-radius: 5px;
-  max-width: 500px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.u-mb2 {
+  margin-bottom: 2rem;
 }
 
-input,
-label,
-button {
-  font-size: 18px;
-  margin: 10px;
+.ant-btn.ant-btn-primary {
+  background-color: #d62068;
+  border-color: #d62068;
+}
+
+.ant-btn.ant-btn-primary:hover {
+  background-color: black;
+  border-color: #d62068;
+}
+
+.ant-btn.ant-btn-ghost {
+  background-color: #d62068;
+  border-color: #d62068;
+}
+
+.ant-btn.ant-btn-ghost:hover {
+  background-color: black;
+  border-color: #d62068;
   color: white;
 }
 
-button {
-  background-color: var(--primary-color);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #ff6f6f;
-}
-
-/* Style the title */
-h1 {
-  font-size: 3em;
-  text-align: center;
-  text-shadow: 2px 2px #ff3d3d;
-  margin-bottom: 30px;
-}
-
-/* Style the footer */
-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 10px;
-  text-align: center;
-  font-size: 14px;
+a {
+  color: #d62068;
 }

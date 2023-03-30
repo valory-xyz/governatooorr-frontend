@@ -133,7 +133,7 @@ export default function TokenAddress() {
   });
 
   if (loading) {
-    return <div className="card form-card">Loading...</div>;
+    return <div className="card form-card u-text-align-center">Loading...</div>;
   }
 
   if (error) {
@@ -142,78 +142,80 @@ export default function TokenAddress() {
   }
 
   return account ? (
-    <div className="card form-card u-text-align-center">
-      <div>
-        <b>Token to delegate</b>
-      </div>
-      <label>
-        <input
-          type="radio"
-          value="0xc00e94Cb662C3520282E6f5717214004A7f26888"
-          checked={
-            tokenAddress === "0xc00e94Cb662C3520282E6f5717214004A7f26888"
-          }
-          onChange={handleTokenAddressChange}
-        />
-        &nbsp;COMP
-      </label>
-      <br />
-      <label>
-        <input
-          type="radio"
-          value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
-          checked={
-            tokenAddress === "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
-          }
-          onChange={handleTokenAddressChange}
-        />
-        &nbsp;UNI
-      </label>
-
-      <br />
-      <br />
-
-      <div>
+    <>
+      <div className="card form-card  u-mb2">
         <div>
-          <b>Voting preference</b>
+          <b>Token to delegate</b>
         </div>
         <label>
           <input
             type="radio"
-            value="good"
-            checked={votingPreference === "good"}
-            onChange={handleVotingPreferenceChange}
+            value="0xc00e94Cb662C3520282E6f5717214004A7f26888"
+            checked={
+              tokenAddress === "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+            }
+            onChange={handleTokenAddressChange}
           />
-          &nbsp;Good
+          &nbsp;COMP
         </label>
         <br />
         <label>
           <input
             type="radio"
-            value="evil"
-            checked={votingPreference === "evil"}
-            onChange={handleVotingPreferenceChange}
+            value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+            checked={
+              tokenAddress === "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+            }
+            onChange={handleTokenAddressChange}
           />
-          &nbsp;Evil
+          &nbsp;UNI
         </label>
+
+        <br />
+        <br />
+
+        <div>
+          <div>
+            <b>Voting preference</b>
+          </div>
+          <label>
+            <input
+              type="radio"
+              value="good"
+              checked={votingPreference === "good"}
+              onChange={handleVotingPreferenceChange}
+            />
+            &nbsp;Good
+          </label>
+          <br />
+          <label>
+            <input
+              type="radio"
+              value="evil"
+              checked={votingPreference === "evil"}
+              onChange={handleVotingPreferenceChange}
+            />
+            &nbsp;Evil
+          </label>
+        </div>
+
+        <br />
+
+        <Button
+          type="primary"
+          onClick={() => handleDelegate()}
+          loading={delegating}
+        >
+          Delegate
+        </Button>
       </div>
-
-      <br />
-
-      <Button
-        type="primary"
-        onClick={() => handleDelegate()}
-        loading={delegating}
-      >
-        Delegate
-      </Button>
-
-      <br />
-      <br />
-      <br />
-
-      <p>Donate ETH for gas: {delegateeAddress}</p>
-    </div>
+      <div className="card form-card u-mb2">
+        <Link href="/docs">Docs</Link>
+      </div>
+      <div className="card form-card u-mb2">
+        Donate ETH for gas: {delegateeAddress}
+      </div>
+    </>
   ) : (
     <div className="card form-card">Connect wallet to delegate tokens</div>
   );

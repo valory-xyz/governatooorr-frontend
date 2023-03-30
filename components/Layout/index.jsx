@@ -85,12 +85,14 @@ const NavigationBar = ({ children }) => {
   if (screens.xs) {
     return (
       <CustomLayout hasSider>
-        <Header>{logo}</Header>
+        <div className="u-text-align-center">{logo}</div>
         <SupportOnlyDesktop>
-          <Result
-            status="warning"
-            title="Not supported on mobile, please switch to desktop"
-          />
+          <div className="card form-card">
+            <Result
+              status="warning"
+              title="Not supported on mobile, please switch to desktop"
+            />
+          </div>
         </SupportOnlyDesktop>
       </CustomLayout>
     );
