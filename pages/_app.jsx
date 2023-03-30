@@ -1,19 +1,20 @@
 /* eslint-disable jest/require-hook */
-import App from "next/app";
-import { createWrapper } from "next-redux-wrapper";
-import PropTypes from "prop-types";
+import App from 'next/app';
+import { createWrapper } from 'next-redux-wrapper';
+import PropTypes from 'prop-types';
 
-import Web3 from "web3";
-import { Web3ReactProvider } from "@web3-react/core";
+import Web3 from 'web3';
+import { Web3ReactProvider } from '@web3-react/core';
 
-import { Web3DataProvider } from "@autonolas/frontend-library";
-import Meta from "common-util/meta";
-import GlobalStyle from "components/GlobalStyles";
-import Layout from "components/Layout";
-import { ApolloProvider } from "@apollo/client";
-import client from "../apollo-client.js";
-import initStore from "../store";
-import "../styles/global.css";
+import { Web3DataProvider } from '@autonolas/frontend-library';
+import Meta from 'common-util/meta';
+import GlobalStyle from 'components/GlobalStyles';
+import Layout from 'components/Layout';
+import { ApolloProvider } from '@apollo/client';
+import client from '../apollo-client';
+import initStore from '../store';
+
+require('../styles/antd.less');
 
 const getLibrary = (provider) => new Web3(provider);
 

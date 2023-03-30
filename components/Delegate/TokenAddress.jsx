@@ -1,12 +1,12 @@
-import { useQuery, gql } from "@apollo/client";
-import { Button, message } from "antd";
-import axios from "axios";
-import { getWeb3Details } from "common-util/Contracts";
-import { notifySuccess } from "common-util/functions";
-import { get } from "lodash";
-import Link from "next/link";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useQuery, gql } from '@apollo/client';
+import { Button, message } from 'antd/lib';
+import axios from 'axios';
+import { getWeb3Details } from 'common-util/Contracts';
+import { notifySuccess } from 'common-util/functions';
+import { get } from 'lodash';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const QUERY = gql`
   query Accounts($ids: [AccountID!]) {
@@ -22,18 +22,16 @@ const QUERY = gql`
   }
 `;
 
-const delegateeAddress = "0x94825185b1dD96918635270ddA526254a0F2fbf1";
-const serviceEndpoint =
-  "https://WrithingDependentApplicationprogram.oaksprout.repl.co";
+const delegateeAddress = '0x94825185b1dD96918635270ddA526254a0F2fbf1';
+const serviceEndpoint = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
 
-const mockDelegateTokens = () =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      const mockTransactionId = "123123"; // Simulated transaction ID
-      console.log("Mock delegation successful, id:", mockTransactionId);
-      resolve(mockTransactionId);
-    }, 1000); // Simulate a delay in the response
-  });
+const mockDelegateTokens = () => new Promise((resolve) => {
+  setTimeout(() => {
+    const mockTransactionId = '123123'; // Simulated transaction ID
+    console.log('Mock delegation successful, id:', mockTransactionId);
+    resolve(mockTransactionId);
+  }, 1000); // Simulate a delay in the response
+});
 
 const getTokenContractAbi = async (tokenAddress) => {
   const etherscanApiUrl = `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
@@ -50,13 +48,13 @@ const createTokenContract = (tokenContractAbi) => {
 
 export default function TokenAddress() {
   const [tokenAddress, setTokenAddress] = useState(
-    "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+    '0xc00e94Cb662C3520282E6f5717214004A7f26888',
   );
-  const [tokenContractAbi, setTokenContractAbi] = useState("");
-  const [votingPreference, setVotingPreference] = useState("evil");
+  const [tokenContractAbi, setTokenContractAbi] = useState('');
+  const [votingPreference, setVotingPreference] = useState('evil');
   const [delegating, setDelegating] = useState(false);
 
-  const account = useSelector((state) => get(state, "setup.account"));
+  const account = useSelector((state) => get(state, 'setup.account'));
 
   const handleQueryCompleted = async (data1) => {
     const stringedTokenContractAbi = await getTokenContractAbi(tokenAddress);
@@ -73,24 +71,23 @@ export default function TokenAddress() {
     setVotingPreference(event.target.value);
   };
 
-  const delegateTokens = () =>
-    new Promise((resolve, reject) => {
-      const contract = createTokenContract(tokenContractAbi);
-      contract.options.address = tokenAddress;
+  const delegateTokens = () => new Promise((resolve, reject) => {
+    const contract = createTokenContract(tokenContractAbi);
+    contract.options.address = tokenAddress;
 
-      contract.methods
-        .delegate(delegateeAddress)
-        .send({ from: account })
-        .then((response) => {
-          notifySuccess("Tokens delegated");
-          const id = get(response, "events.Transfer.returnValues.id");
-          resolve(id);
-        })
-        .catch((e) => {
-          window.console.log("Error occurred when delegating tokens");
-          reject(e);
-        });
-    });
+    contract.methods
+      .delegate(delegateeAddress)
+      .send({ from: account })
+      .then((response) => {
+        notifySuccess('Tokens delegated');
+        const id = get(response, 'events.Transfer.returnValues.id');
+        resolve(id);
+      })
+      .catch((e) => {
+        window.console.log('Error occurred when delegating tokens');
+        reject(e);
+      });
+  });
 
   const handleDelegate = async () => {
     try {
@@ -109,20 +106,20 @@ export default function TokenAddress() {
         axios
           .post(`${serviceEndpoint}/submit-json`, postPayload)
           .then((response) => {
-            console.log("Successfully posted object:", response);
-            message.success("Delegation complete!"); // Display success message
+            console.log('Successfully posted object:', response);
+            message.success('Delegation complete!'); // Display success message
           })
           .catch((error) => {
-            console.error("Error posting object:", error);
-            message.error("Error: Could not complete delegation."); // Display error message
+            console.error('Error posting object:', error);
+            message.error('Error: Could not complete delegation.'); // Display error message
           })
           .finally(() => {
             setDelegating(false);
           });
       }
     } catch (e) {
-      console.error("Error occurred when delegating tokens:", e);
-      message.error("Error: Could not complete delegation."); // Display error message
+      console.error('Error occurred when delegating tokens:', e);
+      message.error('Error: Could not complete delegation.'); // Display error message
       setDelegating(false);
     }
   };
@@ -152,7 +149,7 @@ export default function TokenAddress() {
             type="radio"
             value="0xc00e94Cb662C3520282E6f5717214004A7f26888"
             checked={
-              tokenAddress === "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+              tokenAddress === '0xc00e94Cb662C3520282E6f5717214004A7f26888'
             }
             onChange={handleTokenAddressChange}
           />
@@ -164,7 +161,7 @@ export default function TokenAddress() {
             type="radio"
             value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
             checked={
-              tokenAddress === "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+              tokenAddress === '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
             }
             onChange={handleTokenAddressChange}
           />
@@ -182,7 +179,7 @@ export default function TokenAddress() {
             <input
               type="radio"
               value="good"
-              checked={votingPreference === "good"}
+              checked={votingPreference === 'good'}
               onChange={handleVotingPreferenceChange}
             />
             &nbsp;Good
@@ -192,7 +189,7 @@ export default function TokenAddress() {
             <input
               type="radio"
               value="evil"
-              checked={votingPreference === "evil"}
+              checked={votingPreference === 'evil'}
               onChange={handleVotingPreferenceChange}
             />
             &nbsp;Evil
@@ -206,7 +203,7 @@ export default function TokenAddress() {
           onClick={() => handleDelegate()}
           loading={delegating}
           disabled={!account}
-          className={account || "u-mb1"}
+          className={account || 'u-mb1'}
         >
           Delegate
         </Button>
@@ -216,7 +213,9 @@ export default function TokenAddress() {
         <Link href="/docs">Docs</Link>
       </div>
       <div className="card form-card u-mb2">
-        Donate ETH for gas: {delegateeAddress}
+        Donate ETH for gas:
+        {' '}
+        {delegateeAddress}
       </div>
     </>
   );

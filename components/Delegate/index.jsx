@@ -1,6 +1,5 @@
-import React from "react";
-import TokenAddress from "./TokenAddress";
-import ClientOnly from "components/ClientOnly";
+import ClientOnly from 'components/ClientOnly';
+import TokenAddress from './TokenAddress';
 
 function Delegate() {
   return (

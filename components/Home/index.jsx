@@ -1,11 +1,9 @@
-import Delegate from "components/Delegate";
+import Delegate from 'components/Delegate';
 
-const Home = () => {
-  return (
-    <>
-      <Delegate />
-    </>
-  );
-};
+const Home = () => (
+  <>
+    <Delegate />
+  </>
+);
 
 export default Home;
