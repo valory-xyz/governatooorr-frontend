@@ -1,12 +1,17 @@
+/* eslint-disable no-unused-vars */
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { get } from 'lodash';
+import Link from 'next/link';
 import { useQuery, gql } from '@apollo/client';
-import { Button, message } from 'antd/lib';
+import {
+  Button, message, Card, Radio, Typography,
+} from 'antd/lib';
 import axios from 'axios';
 import { getWeb3Details } from 'common-util/Contracts';
 import { notifySuccess } from 'common-util/functions';
-import { get } from 'lodash';
-import Link from 'next/link';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+
+const { Text } = Typography;
 
 const QUERY = gql`
   query Accounts($ids: [AccountID!]) {
@@ -59,6 +64,7 @@ export default function TokenAddress() {
   const handleQueryCompleted = async (data1) => {
     const stringedTokenContractAbi = await getTokenContractAbi(tokenAddress);
     // convert ABI to JSON format
+    // eslint-disable-next-line no-eval
     const tempTokenContractAbi = eval(stringedTokenContractAbi);
     setTokenContractAbi(tempTokenContractAbi);
   };
@@ -140,60 +146,36 @@ export default function TokenAddress() {
 
   return (
     <>
-      <div className="card form-card  u-mb2">
-        <div>
-          <b>Token to delegate</b>
-        </div>
-        <label>
-          <input
-            type="radio"
-            value="0xc00e94Cb662C3520282E6f5717214004A7f26888"
-            checked={
-              tokenAddress === '0xc00e94Cb662C3520282E6f5717214004A7f26888'
-            }
-            onChange={handleTokenAddressChange}
-          />
-          &nbsp;COMP
-        </label>
-        <br />
-        <label>
-          <input
-            type="radio"
-            value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
-            checked={
-              tokenAddress === '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
-            }
-            onChange={handleTokenAddressChange}
-          />
-          &nbsp;UNI
-        </label>
-
-        <br />
-        <br />
-
-        <div>
-          <div>
-            <b>Voting preference</b>
-          </div>
-          <label>
-            <input
-              type="radio"
-              value="good"
-              checked={votingPreference === 'good'}
-              onChange={handleVotingPreferenceChange}
-            />
-            &nbsp;Good
-          </label>
+      <Card className="form-card">
+        <div className="token-to-delegate">
+          <Text strong>Token to delegate</Text>
           <br />
-          <label>
-            <input
-              type="radio"
-              value="evil"
-              checked={votingPreference === 'evil'}
-              onChange={handleVotingPreferenceChange}
-            />
-            &nbsp;Evil
-          </label>
+          <Radio.Group onChange={handleTokenAddressChange} value={tokenAddress}>
+            <Radio value="0xc00e94Cb662C3520282E6f5717214004A7f26888">
+              COMP
+            </Radio>
+            <br />
+            <Radio value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984">
+              UNI
+            </Radio>
+          </Radio.Group>
+        </div>
+
+        <br />
+        <br />
+
+        <div className="voting-preference">
+          <Text strong>Voting preference</Text>
+          <br />
+
+          <Radio.Group
+            onChange={handleVotingPreferenceChange}
+            value={votingPreference}
+          >
+            <Radio value="good">Good</Radio>
+            <br />
+            <Radio value="evil">Evil</Radio>
+          </Radio.Group>
         </div>
 
         <br />
@@ -203,20 +185,18 @@ export default function TokenAddress() {
           onClick={() => handleDelegate()}
           loading={delegating}
           disabled={!account}
-          className={account || 'u-mb1'}
         >
           Delegate
         </Button>
-        {account || <div>To delegate, connect a wallet</div>}
-      </div>
-      <div className="card form-card u-mb2">
-        <Link href="/docs">Docs</Link>
-      </div>
-      <div className="card form-card u-mb2">
-        Donate ETH for gas:
-        {' '}
+        <div className="u-mt1">
+          {account || 'To delegate, connect a wallet'}
+        </div>
+      </Card>
+
+      <Card className="form-card">
+        Donate ETH for gas:&nbsp;
         {delegateeAddress}
-      </div>
+      </Card>
     </>
   );
 }

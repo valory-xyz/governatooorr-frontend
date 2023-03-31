@@ -48,10 +48,6 @@ const Overview = () => (
         process and helps users to effectively participate in the dynamic world
         of decentralized governance.
       </p>
-
-      <br />
-      <br />
-      <br />
     </div>
   </>
 );
