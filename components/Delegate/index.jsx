@@ -1,12 +1,12 @@
 import React from "react";
-import TokenAddress from "./TokenAddress";
 import ClientOnly from "components/ClientOnly";
+import DelegateBody from "./DelegateBody";
 
 function Delegate() {
   return (
     <div>
       <ClientOnly>
-        <TokenAddress />
+        <DelegateBody />
       </ClientOnly>
     </div>
   );

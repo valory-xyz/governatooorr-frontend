@@ -9,6 +9,8 @@ body {
   padding: 0;
 }
 
+/* Nav */
+
 .navbar {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -36,9 +38,7 @@ body {
   justify-self: end;
 }
 
-.dash {
-  background-color: #d62068 !important;
-}
+/* Cards */
 
 .card {
   background-color: #051934;
@@ -53,12 +53,10 @@ body {
 }
 
 .content-card {
-  max-width: 1000px;
+  max-width: 1200px;
 }
 
-.u-text-align-center {
-  text-align: center;
-}
+/* Utilities */
 
 .u-mb1 {
   margin-bottom: 1rem;
@@ -67,6 +65,16 @@ body {
 .u-mb2 {
   margin-bottom: 2rem;
 }
+
+.u-text-align-center {
+  text-align: center;
+}
+
+.u-color-white {
+  color: white;
+}
+
+/* Buttons */
 
 .ant-btn.ant-btn-primary[disabled] {
   background-color: rgba(255, 255, 255, 0.2);
@@ -99,6 +107,31 @@ body {
   color: white;
 }
 
+/* Tables */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+table th,
+table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+table th {
+  text-align: left;
+}
+
+/* Misc */
+
 a {
   color: #d62068;
+}
+
+.dash {
+  background-color: #d62068 !important;
 }

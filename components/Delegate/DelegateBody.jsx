@@ -1,5 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 import { Button, message } from "antd";
+import Title from "antd/lib/typography/Title";
 import axios from "axios";
 import { getWeb3Details } from "common-util/Contracts";
 import { notifySuccess } from "common-util/functions";
@@ -26,15 +27,6 @@ const delegateeAddress = "0x94825185b1dD96918635270ddA526254a0F2fbf1";
 const serviceEndpoint =
   "https://WrithingDependentApplicationprogram.oaksprout.repl.co";
 
-const mockDelegateTokens = () =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      const mockTransactionId = "123123"; // Simulated transaction ID
-      console.log("Mock delegation successful, id:", mockTransactionId);
-      resolve(mockTransactionId);
-    }, 1000); // Simulate a delay in the response
-  });
-
 const getTokenContractAbi = async (tokenAddress) => {
   const etherscanApiUrl = `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
 
@@ -48,7 +40,7 @@ const createTokenContract = (tokenContractAbi) => {
   return new web3.eth.Contract(tokenContractAbi);
 };
 
-export default function TokenAddress() {
+export default function DelegateBody() {
   const [tokenAddress, setTokenAddress] = useState(
     "0xc00e94Cb662C3520282E6f5717214004A7f26888"
   );
@@ -58,7 +50,7 @@ export default function TokenAddress() {
 
   const account = useSelector((state) => get(state, "setup.account"));
 
-  const handleQueryCompleted = async (data1) => {
+  const handleQueryCompleted = async () => {
     const stringedTokenContractAbi = await getTokenContractAbi(tokenAddress);
     // convert ABI to JSON format
     const tempTokenContractAbi = eval(stringedTokenContractAbi);
@@ -96,8 +88,7 @@ export default function TokenAddress() {
     try {
       setDelegating(true);
 
-      // const id = await delegateTokens();
-      const id = await mockDelegateTokens();
+      const id = await delegateTokens();
 
       if (id) {
         const postPayload = {
@@ -107,7 +98,7 @@ export default function TokenAddress() {
         };
 
         axios
-          .post(`${serviceEndpoint}/submit-json`, postPayload)
+          .post(`${serviceEndpoint}/delegate`, postPayload)
           .then((response) => {
             console.log("Successfully posted object:", response);
             message.success("Delegation complete!"); // Display success message
@@ -143,7 +134,8 @@ export default function TokenAddress() {
 
   return (
     <>
-      <div className="card form-card  u-mb2">
+      <div className="card form-card u-mb2">
+        <Title className="u-color-white">Delegate</Title>
         <div>
           <b>Token to delegate</b>
         </div>
@@ -210,7 +202,7 @@ export default function TokenAddress() {
         >
           Delegate
         </Button>
-        {account || <div>To delegate, connect a wallet</div>}
+        {!account && <div>To delegate, connect a wallet</div>}
       </div>
       <div className="card form-card u-mb2">
         <Link href="/docs">Docs</Link>
