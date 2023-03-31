@@ -1,11 +1,11 @@
 import ClientOnly from 'components/ClientOnly';
-import TokenAddress from './TokenAddress';
+import DelegateBody from './DelegateBody';
 
 function Delegate() {
   return (
     <div>
       <ClientOnly>
-        <TokenAddress />
+        <DelegateBody />
       </ClientOnly>
     </div>
   );

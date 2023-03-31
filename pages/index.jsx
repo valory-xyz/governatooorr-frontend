@@ -1,3 +1,3 @@
-import Delegate from 'components/Delegate';
+import Home from "components/Home";
 
-export default Delegate;
+export default Home;
