@@ -1,3 +1,7 @@
+import { get } from 'lodash';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import { useQuery, gql } from '@apollo/client';
 import {
   Button, message, Card, Radio, Typography,
@@ -5,9 +9,6 @@ import {
 import axios from 'axios';
 import { getWeb3Details } from 'common-util/Contracts';
 import { notifySuccess } from 'common-util/functions';
-import { get } from 'lodash';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 const { Text, Title } = Typography;
 
@@ -25,7 +26,6 @@ const QUERY = gql`
   }
 `;
 
-const delegateeAddress = '0x94825185b1dD96918635270ddA526254a0F2fbf1';
 const serviceEndpoint = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
 
 const getTokenContractAbi = async (tokenAddress) => {
@@ -41,7 +41,7 @@ const createTokenContract = (tokenContractAbi) => {
   return new web3.eth.Contract(tokenContractAbi);
 };
 
-export default function DelegateBody() {
+export default function DelegateBody({ delegateeAddress }) {
   const [tokenAddress, setTokenAddress] = useState(
     '0xc00e94Cb662C3520282E6f5717214004A7f26888',
   );
@@ -144,7 +144,6 @@ export default function DelegateBody() {
             <Radio value="0xc00e94Cb662C3520282E6f5717214004A7f26888">
               COMP
             </Radio>
-            <br />
             <Radio value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984">
               UNI
             </Radio>
@@ -163,7 +162,6 @@ export default function DelegateBody() {
             value={votingPreference}
           >
             <Radio value="good">Good</Radio>
-            <br />
             <Radio value="evil">Evil</Radio>
           </Radio.Group>
         </div>
@@ -182,11 +180,10 @@ export default function DelegateBody() {
           {account || 'To delegate, connect a wallet'}
         </div>
       </Card>
-
-      <Card className="form-card">
-        Donate ETH for gas:&nbsp;
-        {delegateeAddress}
-      </Card>
     </>
   );
 }
+
+DelegateBody.propTypes = {
+  delegateeAddress: PropTypes.string.isRequired,
+};

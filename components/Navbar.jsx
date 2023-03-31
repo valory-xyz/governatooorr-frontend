@@ -6,7 +6,7 @@ const Navbar = ({
   logo, selectedMenu, handleMenuItemClick, menuItems,
 }) => (
   <div className="navbar">
-    <div className="navbar__logo">{logo}</div>
+    <div>{logo}</div>
     <Menu
       theme="dark"
       mode="horizontal"
@@ -15,7 +15,7 @@ const Navbar = ({
       items={menuItems}
       className="navbar__menu"
     />
-    <div className="navbar__login">
+    <div>
       <Login />
     </div>
   </div>
