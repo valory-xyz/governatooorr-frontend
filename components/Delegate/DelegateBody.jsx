@@ -136,7 +136,7 @@ export default function DelegateBody({ delegateeAddress }) {
   return (
     <>
       <Card className="form-card">
-        <Title level={2}>Delegate</Title>
+        <Title level={3}>Delegate</Title>
         <div className="token-to-delegate">
           <Text strong>Token to delegate</Text>
           <br />
@@ -176,9 +176,8 @@ export default function DelegateBody({ delegateeAddress }) {
         >
           Delegate
         </Button>
-        <div className="u-mt1">
-          {account || 'To delegate, connect a wallet'}
-        </div>
+
+        {!account && <div className="u-mt1">To delegate, connect a wallet</div>}
       </Card>
     </>
   );

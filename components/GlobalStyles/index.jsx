@@ -33,6 +33,7 @@ const GlobalStyle = createGlobalStyle`
 
   .service-status-maximized {
     background: ${NEW_SECONDARY_COLOR};
+    border-color: ${NEW_PRIMARY_COLOR};
     .status-sub-header {
       color: ${COLOR.WHITE};
     }
