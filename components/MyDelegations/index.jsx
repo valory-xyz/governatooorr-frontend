@@ -33,7 +33,7 @@ const MyDelegations = () => {
 
   return (
     <Card className="form-card">
-      <Title className="u-color-white">My Delegations</Title>
+      <Title level={2}>My Delegations</Title>
       {account ? (
         <>
           {delegations.length > 0 ? (

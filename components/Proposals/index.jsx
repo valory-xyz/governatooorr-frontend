@@ -24,7 +24,7 @@ const Proposals = () => {
 
   return (
     <Card className="content-card">
-      <Title className="u-color-white">Proposals</Title>
+      <Title level={2}>Past Votes</Title>
       {proposals.length > 0 ? (
         <table>
           <thead>

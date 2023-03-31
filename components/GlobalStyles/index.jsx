@@ -1,7 +1,8 @@
 import { COLOR } from '@autonolas/frontend-library';
 import { createGlobalStyle } from 'styled-components';
 
-const NEW_COLOR = '#d62068';
+const NEW_PRIMARY_COLOR = '#d62068';
+const NEW_SECONDARY_COLOR = '#051934';
 
 // const GlobalStyle = styled.div`
 const GlobalStyle = createGlobalStyle`
@@ -31,7 +32,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .service-status-maximized {
-    background: ${COLOR.BLACK};
+    background: ${NEW_SECONDARY_COLOR};
     .status-sub-header {
       color: ${COLOR.WHITE};
     }
@@ -40,7 +41,7 @@ const GlobalStyle = createGlobalStyle`
       text-underline-offset: 4px;
     }
     .ant-btn-link {
-      color: ${NEW_COLOR};
+      color: ${NEW_PRIMARY_COLOR};
     }
   }
 `;

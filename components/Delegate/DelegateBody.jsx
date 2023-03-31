@@ -136,7 +136,7 @@ export default function DelegateBody({ delegateeAddress }) {
   return (
     <>
       <Card className="form-card">
-        <Title className="u-color-white">Delegate</Title>
+        <Title level={2}>Delegate</Title>
         <div className="token-to-delegate">
           <Text strong>Token to delegate</Text>
           <br />
