@@ -1,30 +1,22 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import dynamic from 'next/dynamic';
 import {
   Layout, Menu, Grid, Result,
 } from 'antd/lib';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { setIsVerified } from 'store/setup/actions';
-import Image from 'next/image';
 import Navbar from '../Navbar';
-import { DiscordLink } from '../Home/common';
 import Login from '../Login';
 import Footer from './Footer';
-import { getAddressStatus } from './utils';
 import {
   CustomLayout,
   Logo,
-  RightMenu,
   LoginXsContainer,
   SupportOnlyDesktop,
 } from './styles';
-
-const LogoSvg = dynamic(() => import('common-util/SVGs/logo'));
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;

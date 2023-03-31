@@ -30,16 +30,6 @@ const GlobalStyle = createGlobalStyle`
     background: transparent;
   }
 
-  .ant-menu.ant-menu-dark .ant-menu-item-selected,
-  .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
-    background: transparent;
-    color: ${NEW_COLOR};
-  }
-  .ant-menu-dark.ant-menu-horizontal > .ant-menu-item:hover {
-    background: transparent;
-    color: ${NEW_COLOR};
-  }
-
   .service-status-maximized {
     background: ${COLOR.BLACK};
     .status-sub-header {
