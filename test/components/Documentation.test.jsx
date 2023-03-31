@@ -1,6 +1,3 @@
-// write a test for the Documentation component
-//
-import React from 'react';
 import { render } from '@testing-library/react';
 import Documentation from 'components/Documentation';
 
