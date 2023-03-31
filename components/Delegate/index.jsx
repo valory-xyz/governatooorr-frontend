@@ -1,15 +1,19 @@
-import React from "react";
-import ClientOnly from "components/ClientOnly";
-import DelegateBody from "./DelegateBody";
+import PropTypes from 'prop-types';
+import ClientOnly from 'components/ClientOnly';
+import DelegateBody from './DelegateBody';
 
-function Delegate() {
+function Delegate({ delegateeAddress }) {
   return (
     <div>
       <ClientOnly>
-        <DelegateBody />
+        <DelegateBody delegateeAddress={delegateeAddress} />
       </ClientOnly>
     </div>
   );
 }
+
+Delegate.propTypes = {
+  delegateeAddress: PropTypes.string.isRequired,
+};
 
 export default Delegate;

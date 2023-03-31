@@ -1,42 +1,37 @@
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
-import { Layout, Menu, Grid, Result } from "antd/lib";
-import PropTypes from "prop-types";
-import get from "lodash/get";
-import { setIsVerified } from "store/setup/actions";
-import Image from "next/image";
-import Navbar from "../Navbar";
-import { DiscordLink } from "../Home/common";
-import Login from "../Login";
-import Footer from "./Footer";
-import { getAddressStatus } from "./utils";
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
+import {
+  Layout, Menu, Grid, Result,
+} from 'antd/lib';
+import PropTypes from 'prop-types';
+import get from 'lodash/get';
+import { setIsVerified } from 'store/setup/actions';
+import Navbar from '../Navbar';
+import Login from '../Login';
+import Footer from './Footer';
 import {
   CustomLayout,
   Logo,
-  RightMenu,
   LoginXsContainer,
   SupportOnlyDesktop,
-} from "./styles";
-
-const LogoSvg = dynamic(() => import("common-util/SVGs/logo"));
+} from './styles';
 
 const { Header, Content } = Layout;
 const { useBreakpoint } = Grid;
 
-const menuItems = [{ key: "docs", label: "Docs" }];
+const menuItems = [{ key: 'docs', label: 'Docs' }];
 
 const NavigationBar = ({ children }) => {
   const screens = useBreakpoint();
   const router = useRouter();
-  const [selectedMenu, setSelectedMenu] = useState("homepage");
+  const [selectedMenu, setSelectedMenu] = useState('homepage');
   const { pathname } = router;
 
   const dispatch = useDispatch();
-  const account = useSelector((state) => get(state, "setup.account"));
-  const chainId = useSelector((state) => get(state, "setup.chainId"));
+  const account = useSelector((state) => get(state, 'setup.account'));
+  const chainId = useSelector((state) => get(state, 'setup.chainId'));
 
   useEffect(() => {
     // on first render, if there is no account (ie. wallet not connected),
@@ -66,18 +61,18 @@ const NavigationBar = ({ children }) => {
   // to set default menu on first render
   useEffect(() => {
     if (pathname) {
-      const name = pathname.split("/")[1];
-      setSelectedMenu(name || "homepage");
+      const name = pathname.split('/')[1];
+      setSelectedMenu(name || 'homepage');
     }
   }, [pathname]);
 
   const handleMenuItemClick = ({ key }) => {
-    router.push(key === "homepage" ? "/" : `/${key}`);
+    router.push(key === 'homepage' ? '/' : `/${key}`);
     setSelectedMenu(key);
   };
 
   const logo = (
-    <Logo onClick={() => router.push("/")}>
+    <Logo onClick={() => router.push('/')}>
       <img src="/images/logo.png" alt="logo" className="logo" />
     </Logo>
   );
@@ -118,7 +113,7 @@ const NavigationBar = ({ children }) => {
         </div>
       </Content>
 
-      {/* <Footer /> */}
+      <Footer />
     </CustomLayout>
   );
 };

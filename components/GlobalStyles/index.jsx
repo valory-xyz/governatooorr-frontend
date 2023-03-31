@@ -1,5 +1,50 @@
-import { createGlobalStyle } from "styled-components";
+import { COLOR } from '@autonolas/frontend-library';
+import { createGlobalStyle } from 'styled-components';
 
-const GlobalStyle = createGlobalStyle``;
+const NEW_PRIMARY_COLOR = '#d62068';
+const NEW_SECONDARY_COLOR = '#051934';
+
+// const GlobalStyle = styled.div`
+const GlobalStyle = createGlobalStyle`
+  .site-layout {
+    padding: 0px 50px 160px;
+  }
+
+  .ant-layout-header {
+    display: flex;
+    position: fixed;
+    z-index: 10;
+    width: 100%;
+    .ant-menu {
+      flex: 1;
+      background: transparent;
+
+      .ant-menu-item-selected {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .ant-menu.ant-menu-dark,
+  .ant-menu-dark .ant-menu-sub,
+  .ant-menu.ant-menu-dark .ant-menu-sub {
+    background: transparent;
+  }
+
+  .service-status-maximized {
+    background: ${NEW_SECONDARY_COLOR};
+    border-color: ${NEW_PRIMARY_COLOR};
+    .status-sub-header {
+      color: ${COLOR.WHITE};
+    }
+    a {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    .ant-btn-link {
+      color: ${NEW_PRIMARY_COLOR};
+    }
+  }
+`;
 
 export default GlobalStyle;

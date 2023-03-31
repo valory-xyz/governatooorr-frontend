@@ -9,4 +9,8 @@ export const notifySuccess = (message = 'Successfull', description = null) => no
   description,
 });
 
-export const isGoerli = (id) => id === 5;
+export const isGoerli = () => {
+  // on server side, window is undefined.
+  if (typeof window === 'undefined') return false;
+  return Number(window?.MODAL_PROVIDER?.chainId || 1) === 5;
+};

@@ -1,10 +1,11 @@
-import { Typography } from "antd/lib";
-import { DOCS_SECTIONS } from "../helpers";
+import { Typography } from 'antd/lib';
+import { DOCS_SECTIONS } from '../helpers';
 
-const { Title, Paragraph, Text } = Typography;
+const { Title } = Typography;
 
 const Overview = () => (
   <>
+    <Title style={{ color: 'white' }}>Docs</Title>
     <div id={DOCS_SECTIONS.overview}>
       <p>
         Governatooorr is a revolutionary autonomous service built using
@@ -16,19 +17,21 @@ const Overview = () => (
 
       <p>
         Users can delegate their tokens to the Governatooorr autonomous service,
-        specifying their voting preference as either "good" or "bad." A "good"
-        preference means the service will vote for options that are beneficial
-        to the DAO, while a "bad" preference directs the service to vote for
-        options that are not the most advantageous for the DAO.
+        specifying their voting preference as either &quot;good&quot; or
+        &quot;bad.&quot; A &quot;good&quot; preference means the service will
+        vote for options that are beneficial to the DAO, while a &quot;bad&quot;
+        preference directs the service to vote for options that are not the most
+        advantageous for the DAO.
       </p>
 
       <p>
         The Governatooorr service actively monitors relevant DAO forums for new
         proposals. Leveraging a cutting-edge Large Language Model (LLM) on the
         backend, it is able to analyze these proposals and suggest the most
-        appropriate voting option based on the user's preference. The service
-        then executes the vote accordingly, streamlining the decision-making
-        process and ensuring that the user's voice is heard.
+        appropriate voting option based on the user&apos;s preference. The
+        service then executes the vote accordingly, streamlining the
+        decision-making process and ensuring that the user&apos;s voice is
+        heard.
       </p>
 
       <p>
@@ -45,10 +48,6 @@ const Overview = () => (
         process and helps users to effectively participate in the dynamic world
         of decentralized governance.
       </p>
-
-      <br />
-      <br />
-      <br />
     </div>
   </>
 );

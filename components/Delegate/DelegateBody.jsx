@@ -1,13 +1,16 @@
-import { useQuery, gql } from "@apollo/client";
-import { Button, message } from "antd";
-import Title from "antd/lib/typography/Title";
-import axios from "axios";
-import { getWeb3Details } from "common-util/Contracts";
-import { notifySuccess } from "common-util/functions";
-import { get } from "lodash";
-import Link from "next/link";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { get } from 'lodash';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import { useQuery, gql } from '@apollo/client';
+import {
+  Button, message, Card, Radio, Typography,
+} from 'antd/lib';
+import axios from 'axios';
+import { getWeb3Details } from 'common-util/Contracts';
+import { notifySuccess } from 'common-util/functions';
+
+const { Text, Title } = Typography;
 
 const QUERY = gql`
   query Accounts($ids: [AccountID!]) {
@@ -23,9 +26,7 @@ const QUERY = gql`
   }
 `;
 
-const delegateeAddress = "0x94825185b1dD96918635270ddA526254a0F2fbf1";
-const serviceEndpoint =
-  "https://WrithingDependentApplicationprogram.oaksprout.repl.co";
+const serviceEndpoint = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
 
 const getTokenContractAbi = async (tokenAddress) => {
   const etherscanApiUrl = `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
@@ -40,19 +41,20 @@ const createTokenContract = (tokenContractAbi) => {
   return new web3.eth.Contract(tokenContractAbi);
 };
 
-export default function DelegateBody() {
+export default function DelegateBody({ delegateeAddress }) {
   const [tokenAddress, setTokenAddress] = useState(
-    "0xc00e94Cb662C3520282E6f5717214004A7f26888"
+    '0xc00e94Cb662C3520282E6f5717214004A7f26888',
   );
-  const [tokenContractAbi, setTokenContractAbi] = useState("");
-  const [votingPreference, setVotingPreference] = useState("evil");
+  const [tokenContractAbi, setTokenContractAbi] = useState('');
+  const [votingPreference, setVotingPreference] = useState('evil');
   const [delegating, setDelegating] = useState(false);
 
-  const account = useSelector((state) => get(state, "setup.account"));
+  const account = useSelector((state) => get(state, 'setup.account'));
 
   const handleQueryCompleted = async () => {
     const stringedTokenContractAbi = await getTokenContractAbi(tokenAddress);
     // convert ABI to JSON format
+    // eslint-disable-next-line no-eval
     const tempTokenContractAbi = eval(stringedTokenContractAbi);
     setTokenContractAbi(tempTokenContractAbi);
   };
@@ -65,24 +67,23 @@ export default function DelegateBody() {
     setVotingPreference(event.target.value);
   };
 
-  const delegateTokens = () =>
-    new Promise((resolve, reject) => {
-      const contract = createTokenContract(tokenContractAbi);
-      contract.options.address = tokenAddress;
+  const delegateTokens = () => new Promise((resolve, reject) => {
+    const contract = createTokenContract(tokenContractAbi);
+    contract.options.address = tokenAddress;
 
-      contract.methods
-        .delegate(delegateeAddress)
-        .send({ from: account })
-        .then((response) => {
-          notifySuccess("Tokens delegated");
-          const id = get(response, "events.Transfer.returnValues.id");
-          resolve(id);
-        })
-        .catch((e) => {
-          window.console.log("Error occurred when delegating tokens");
-          reject(e);
-        });
-    });
+    contract.methods
+      .delegate(delegateeAddress)
+      .send({ from: account })
+      .then((response) => {
+        notifySuccess('Tokens delegated');
+        const id = get(response, 'events.Transfer.returnValues.id');
+        resolve(id);
+      })
+      .catch((e) => {
+        window.console.log('Error occurred when delegating tokens');
+        reject(e);
+      });
+  });
 
   const handleDelegate = async () => {
     try {
@@ -100,20 +101,20 @@ export default function DelegateBody() {
         axios
           .post(`${serviceEndpoint}/delegate`, postPayload)
           .then((response) => {
-            console.log("Successfully posted object:", response);
-            message.success("Delegation complete!"); // Display success message
+            console.log('Successfully posted object:', response);
+            message.success('Delegation complete!'); // Display success message
           })
           .catch((error) => {
-            console.error("Error posting object:", error);
-            message.error("Error: Could not complete delegation."); // Display error message
+            console.error('Error posting object:', error);
+            message.error('Error: Could not complete delegation.'); // Display error message
           })
           .finally(() => {
             setDelegating(false);
           });
       }
     } catch (e) {
-      console.error("Error occurred when delegating tokens:", e);
-      message.error("Error: Could not complete delegation."); // Display error message
+      console.error('Error occurred when delegating tokens:', e);
+      message.error('Error: Could not complete delegation.'); // Display error message
       setDelegating(false);
     }
   };
@@ -134,61 +135,35 @@ export default function DelegateBody() {
 
   return (
     <>
-      <div className="card form-card u-mb2">
-        <Title className="u-color-white">Delegate</Title>
-        <div>
-          <b>Token to delegate</b>
-        </div>
-        <label>
-          <input
-            type="radio"
-            value="0xc00e94Cb662C3520282E6f5717214004A7f26888"
-            checked={
-              tokenAddress === "0xc00e94Cb662C3520282E6f5717214004A7f26888"
-            }
-            onChange={handleTokenAddressChange}
-          />
-          &nbsp;COMP
-        </label>
-        <br />
-        <label>
-          <input
-            type="radio"
-            value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
-            checked={
-              tokenAddress === "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
-            }
-            onChange={handleTokenAddressChange}
-          />
-          &nbsp;UNI
-        </label>
-
-        <br />
-        <br />
-
-        <div>
-          <div>
-            <b>Voting preference</b>
-          </div>
-          <label>
-            <input
-              type="radio"
-              value="good"
-              checked={votingPreference === "good"}
-              onChange={handleVotingPreferenceChange}
-            />
-            &nbsp;Good
-          </label>
+      <Card className="form-card">
+        <Title level={3}>Delegate</Title>
+        <div className="token-to-delegate">
+          <Text strong>Token to delegate</Text>
           <br />
-          <label>
-            <input
-              type="radio"
-              value="evil"
-              checked={votingPreference === "evil"}
-              onChange={handleVotingPreferenceChange}
-            />
-            &nbsp;Evil
-          </label>
+          <Radio.Group onChange={handleTokenAddressChange} value={tokenAddress}>
+            <Radio value="0xc00e94Cb662C3520282E6f5717214004A7f26888">
+              COMP
+            </Radio>
+            <Radio value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984">
+              UNI
+            </Radio>
+          </Radio.Group>
+        </div>
+
+        <br />
+        <br />
+
+        <div className="voting-preference">
+          <Text strong>Voting preference</Text>
+          <br />
+
+          <Radio.Group
+            onChange={handleVotingPreferenceChange}
+            value={votingPreference}
+          >
+            <Radio value="good">Good</Radio>
+            <Radio value="evil">Evil</Radio>
+          </Radio.Group>
         </div>
 
         <br />
@@ -198,18 +173,16 @@ export default function DelegateBody() {
           onClick={() => handleDelegate()}
           loading={delegating}
           disabled={!account}
-          className={account || "u-mb1"}
         >
           Delegate
         </Button>
-        {!account && <div>To delegate, connect a wallet</div>}
-      </div>
-      <div className="card form-card u-mb2">
-        <Link href="/docs">Docs</Link>
-      </div>
-      <div className="card form-card u-mb2">
-        Donate ETH for gas: {delegateeAddress}
-      </div>
+
+        {!account && <div className="u-mt1">To delegate, connect a wallet</div>}
+      </Card>
     </>
   );
 }
+
+DelegateBody.propTypes = {
+  delegateeAddress: PropTypes.string.isRequired,
+};

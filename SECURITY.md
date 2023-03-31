@@ -1,10 +1,10 @@
 # Security Policy
 
-This document outlines security procedures and general policies for the `contribution-service-frontend` project.
+This document outlines security procedures and general policies for the `governatooorr-frontend` project.
 
 ## Supported Versions
 
-The following table shows which versions of `contribution-service-frontend` are currently being supported with security updates.
+The following table shows which versions of `governatooorr-frontend` are currently being supported with security updates.
 
 | Version   | Supported          |
 | --------- | ------------------ |
@@ -12,7 +12,7 @@ The following table shows which versions of `contribution-service-frontend` are 
 
 ## Reporting a Vulnerability
 
-The `contribution-service-frontend` team and community take all security bugs in `contribution-service-frontend` seriously. Thank you for improving the security of `contribution-service-frontend`. We appreciate your efforts and responsible disclosure and will make every effort to acknowledge your contributions.
+The `governatooorr-frontend` team and community take all security bugs in `governatooorr-frontend` seriously. Thank you for improving the security of `governatooorr-frontend`. We appreciate your efforts and responsible disclosure and will make every effort to acknowledge your contributions.
 
 Report security bugs by emailing `info@valory.xyz`.
 

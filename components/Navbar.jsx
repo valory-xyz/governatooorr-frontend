@@ -1,24 +1,21 @@
-import { Menu } from "antd";
-import PropTypes from "prop-types";
-import Login from "./Login";
+import { Menu } from 'antd/lib';
+import PropTypes from 'prop-types';
+import Login from './Login';
 
-const { Item } = Menu;
-
-const Navbar = ({ logo, selectedMenu, handleMenuItemClick, menuItems }) => (
+const Navbar = ({
+  logo, selectedMenu, handleMenuItemClick, menuItems,
+}) => (
   <div className="navbar">
-    <div className="navbar__logo">{logo}</div>
+    <div>{logo}</div>
     <Menu
       theme="dark"
       mode="horizontal"
       selectedKeys={[selectedMenu]}
       onClick={handleMenuItemClick}
+      items={menuItems}
       className="navbar__menu"
-    >
-      {menuItems.map(({ key, title }) => (
-        <Item key={key}>{title}</Item>
-      ))}
-    </Menu>
-    <div className="navbar__login">
+    />
+    <div>
       <Login />
     </div>
   </div>
@@ -32,7 +29,7 @@ Navbar.propTypes = {
     PropTypes.shape({
       key: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
 };
 
