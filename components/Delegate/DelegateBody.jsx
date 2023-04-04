@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useQuery, gql } from '@apollo/client';
 import {
   Button, message, Card, Radio, Typography,
@@ -20,59 +19,134 @@ import {
 const { Text, Title } = Typography;
 
 const QUERY = gql`
-  query Accounts($ids: [AccountID!]) {
-    accounts(ids: $ids) {
-      address
+  query Governors($chainIds: [ChainID!], $addresses: [AccountID!]) {
+    governors(chainIds: $chainIds, ids: $addresses) {
+      id
+      type
       name
-      participations {
-        governor {
-          id
-        }
+      slug
+      tokens {
+        address
+        name
+        symbol
+        type
       }
     }
   }
 `;
 
-const serviceEndpoint = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
-
 const getTokenContractAbi = async (tokenAddress) => {
   const etherscanApiUrl = `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
 
-  const response = await axios.get(etherscanApiUrl);
-  return response.data.result;
+  try {
+    const response = await axios.get(etherscanApiUrl);
+
+    if (response.status !== 200) {
+      throw new Error(
+        `Error retrieving token contract ABI: Status ${response.status}`,
+      );
+    }
+
+    const stringedTokenContractAbi = response.data.result;
+    if (!stringedTokenContractAbi) {
+      throw new Error('Token contract ABI is empty');
+    }
+    return JSON.parse(stringedTokenContractAbi);
+  } catch (e) {
+    console.error('Error retrieving token contract ABI:', e);
+    throw new Error('Error retrieving token contract ABI');
+  }
 };
 
 const createTokenContract = (tokenContractAbi) => {
   const { web3 } = getWeb3Details();
 
-  return new web3.eth.Contract(tokenContractAbi);
+  // Check if tokenContractAbi is not empty
+  if (tokenContractAbi && tokenContractAbi !== '') {
+    return new web3.eth.Contract(tokenContractAbi);
+  }
+  throw new Error('Token contract ABI is empty');
 };
 
-export default function DelegateBody({ delegateeAddress }) {
-  const [tokenAddress, setTokenAddress] = useState(
-    '0xc00e94Cb662C3520282E6f5717214004A7f26888',
-  );
+export default function DelegateBody() {
+  const [tokenAddress, setTokenAddress] = useState('');
   const [tokenContractAbi, setTokenContractAbi] = useState('');
   const [votingPreference, setVotingPreference] = useState('evil');
   const [delegating, setDelegating] = useState(false);
+  const [availableTokens, setAvailableTokens] = useState([]);
+  const [governorAddress, setGovernorAddress] = useState('');
+  const [governors, setGovernors] = useState([]);
+  const [tokenBalance, setTokenBalance] = useState('');
 
   const account = useSelector((state) => get(state, 'setup.account'));
 
-  const handleQueryCompleted = async () => {
-    const stringedTokenContractAbi = await getTokenContractAbi(tokenAddress);
-    // convert ABI to JSON format
+  const getFullTokenContractAbi = async (subTokenAddress) => {
+    const stringedTokenContractAbi = await getTokenContractAbi(subTokenAddress);
     // eslint-disable-next-line no-eval
-    const tempTokenContractAbi = eval(stringedTokenContractAbi);
-    setTokenContractAbi(tempTokenContractAbi);
+    return eval(stringedTokenContractAbi);
   };
 
-  const handleTokenAddressChange = (event) => {
-    setTokenAddress(event.target.value);
+  const handleQueryCompleted = async (data) => {
+    // eslint-disable-next-line max-len
+    const governorBravoGovernors = data.governors.filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type));
+
+    setAvailableTokens(
+      governorBravoGovernors
+        .flatMap((governor) => governor.tokens)
+        .filter((token) => token.type === 'ERC20'),
+    );
+
+    setGovernors(governorBravoGovernors);
+  };
+
+  const assignGovernor = (selectedTokenAddress) => {
+    // eslint-disable-next-line max-len
+    const selectedGovernor = governors.find((governor) => governor.tokens.some((token) => token.address === selectedTokenAddress));
+    if (selectedGovernor && selectedTokenAddress) {
+      setGovernorAddress(selectedGovernor.id.split(':').pop());
+    }
+  };
+
+  const handleTokenAddressChange = async (event) => {
+    const selectedTokenAddress = event.target.value;
+    setTokenAddress(selectedTokenAddress);
+
+    // Get the governor ID for the selected token
+    await assignGovernor(selectedTokenAddress);
+
+    const fullTokenContractAbi = await getFullTokenContractAbi(
+      selectedTokenAddress,
+    );
+    setTokenContractAbi(fullTokenContractAbi);
+
+    const updateTokenBalance = async () => {
+      const tokenContract = createTokenContract(fullTokenContractAbi);
+      tokenContract.options.address = selectedTokenAddress;
+
+      try {
+        const balance = await tokenContract.methods.balanceOf(account).call();
+        setTokenBalance(balance);
+      } catch (error) {
+        console.error('Error fetching token balance:', error);
+        setTokenBalance('');
+      }
+    };
+
+    await updateTokenBalance();
   };
 
   const handleVotingPreferenceChange = (event) => {
     setVotingPreference(event.target.value);
   };
+
+  // eslint-disable-next-line no-unused-vars
+  const mockDelegateTokens = () => new Promise((resolve) => {
+    // Simulate a delay to mimic actual process
+    setTimeout(() => {
+      notifySuccess('Tokens delegated');
+      resolve('fake-id'); // Resolve with a fake id
+    }, 2000);
+  });
 
   const delegateTokens = () => new Promise((resolve, reject) => {
     const contract = createTokenContract(tokenContractAbi);
@@ -82,7 +156,6 @@ export default function DelegateBody({ delegateeAddress }) {
       .delegate(DELEGATEE_ADDRESS)
       .send({ from: account })
       .then((response) => {
-        notifySuccess('Tokens delegated');
         const id = get(response, 'events.Transfer.returnValues.id');
         resolve(id);
       })
@@ -103,10 +176,14 @@ export default function DelegateBody({ delegateeAddress }) {
           address: account,
           delegatedToken: tokenAddress,
           votingPreference,
+          governorAddress,
+          tokenBalance,
         };
 
         axios
           .post(`${SERVICE_ENDPOINT}/delegate`, postPayload)
+          .then(() => {
+            notifySuccess('Delegation complete');
           })
           .catch((error) => {
             console.error('Error posting object:', error);
@@ -128,6 +205,7 @@ export default function DelegateBody({ delegateeAddress }) {
       chainIds: SUPPORTED_CHAIN_IDS,
       addresses: SUPPORTED_GOVERNORS_ADDRESSES,
     },
+    onCompleted: (data) => handleQueryCompleted(data),
   });
 
   if (loading) {
@@ -143,16 +221,22 @@ export default function DelegateBody({ delegateeAddress }) {
     <>
       <Card className="form-card">
         <Title level={3}>Delegate</Title>
-        <div className="token-to-delegate">
+        <div className="">
           <Text strong>Token to delegate</Text>
           <br />
           <Radio.Group onChange={handleTokenAddressChange} value={tokenAddress}>
-            <Radio value="0xc00e94Cb662C3520282E6f5717214004A7f26888">
-              COMP
-            </Radio>
-            <Radio value="0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984">
-              UNI
-            </Radio>
+            {availableTokens.map((token) => (
+              <>
+                <Radio key={token.address} value={token.address}>
+                  {token.symbol}
+                  {' '}
+                  –
+                  {' '}
+                  {token.name}
+                </Radio>
+                <br />
+              </>
+            ))}
           </Radio.Group>
         </div>
 
@@ -183,12 +267,24 @@ export default function DelegateBody({ delegateeAddress }) {
           Delegate
         </Button>
 
+        {/* TODO Remove after tests */}
+        {/* <pre>
+          {JSON.stringify(
+            {
+              address: account,
+              delegatedToken: tokenAddress,
+              votingPreference,
+              governorAddress,
+              tokenBalance,
+              tokenContractAbi,
+            },
+            undefined,
+            2,
+          )}
+        </pre> */}
+
         {!account && <div className="u-mt1">To delegate, connect a wallet</div>}
       </Card>
     </>
   );
 }
-
-DelegateBody.propTypes = {
-  delegateeAddress: PropTypes.string.isRequired,
-};
