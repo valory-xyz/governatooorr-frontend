@@ -228,11 +228,7 @@ export default function DelegateBody() {
             {availableTokens.map((token) => (
               <>
                 <Radio key={token.address} value={token.address}>
-                  {token.symbol}
-                  {' '}
-                  –
-                  {' '}
-                  {token.name}
+                  {`${token.symbol} - ${token.name}`}
                 </Radio>
                 <br />
               </>
