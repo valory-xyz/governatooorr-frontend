@@ -9,6 +9,13 @@ import {
 import axios from 'axios';
 import { getWeb3Details } from 'common-util/Contracts';
 import { notifySuccess } from 'common-util/functions';
+import {
+  SERVICE_ENDPOINT,
+  SUPPORTED_CHAIN_IDS,
+  SUPPORTED_GOVERNORS_ADDRESSES,
+  DELEGATEE_ADDRESS,
+  ACCEPTED_GOVERNOR_TYPES,
+} from 'util/constants';
 
 const { Text, Title } = Typography;
 
@@ -72,7 +79,7 @@ export default function DelegateBody({ delegateeAddress }) {
     contract.options.address = tokenAddress;
 
     contract.methods
-      .delegate(delegateeAddress)
+      .delegate(DELEGATEE_ADDRESS)
       .send({ from: account })
       .then((response) => {
         notifySuccess('Tokens delegated');
@@ -99,10 +106,7 @@ export default function DelegateBody({ delegateeAddress }) {
         };
 
         axios
-          .post(`${serviceEndpoint}/delegate`, postPayload)
-          .then((response) => {
-            console.log('Successfully posted object:', response);
-            message.success('Delegation complete!'); // Display success message
+          .post(`${SERVICE_ENDPOINT}/delegate`, postPayload)
           })
           .catch((error) => {
             console.error('Error posting object:', error);
@@ -120,8 +124,10 @@ export default function DelegateBody({ delegateeAddress }) {
   };
 
   const { loading, error } = useQuery(QUERY, {
-    variables: { ids: [`eip155:1:${tokenAddress}`] },
-    onCompleted: (data1) => handleQueryCompleted(data1),
+    variables: {
+      chainIds: SUPPORTED_CHAIN_IDS,
+      addresses: SUPPORTED_GOVERNORS_ADDRESSES,
+    },
   });
 
   if (loading) {

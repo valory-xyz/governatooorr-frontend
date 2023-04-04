@@ -17,3 +17,16 @@ export const META_TAGS_INFO = {
   description: SITE_DESCRIPTION,
   image: SITE_METATAG_IMAGE,
 };
+
+export const SERVICE_ENDPOINT = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
+
+export const SUPPORTED_CHAIN_IDS = ['eip155:1'];
+
+export const SUPPORTED_GOVERNORS_ADDRESSES = [
+  'eip155:1:0x323A76393544d5ecca80cd6ef2A560C6a395b7E3',
+  'eip155:1:0x1C9a7ced4CAdb9c5a65E564e73091912aaec7494',
+];
+
+export const DELEGATEE_ADDRESS = '0x94825185b1dD96918635270ddA526254a0F2fbf1';
+
+export const ACCEPTED_GOVERNOR_TYPES = ['GOVERNORBRAVO', 'OPENZEPPELINGOVERNOR'];

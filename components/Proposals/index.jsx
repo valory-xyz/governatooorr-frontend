@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, Typography } from 'antd/lib';
+import { SERVICE_ENDPOINT } from 'util/constants';
 
 const { Title } = Typography;
 
