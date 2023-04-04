@@ -82,8 +82,7 @@ export default function DelegateBody() {
 
   const getFullTokenContractAbi = async (subTokenAddress) => {
     const stringedTokenContractAbi = await getTokenContractAbi(subTokenAddress);
-    // eslint-disable-next-line no-eval
-    return eval(stringedTokenContractAbi);
+    return stringedTokenContractAbi;
   };
 
   const handleQueryCompleted = async (data) => {
