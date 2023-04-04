@@ -41,7 +41,7 @@ const getTokenContractAbi = async (tokenAddress) => {
   try {
     const response = await axios.get(etherscanApiUrl);
 
-    if (response.status !== 200) {
+    if (response.status !== 200 || response.status !== 201) {
       throw new Error(
         `Error retrieving token contract ABI: Status ${response.status}`,
       );
