@@ -7,7 +7,7 @@ import {
 } from 'antd/lib';
 import axios from 'axios';
 import { getWeb3Details } from 'common-util/Contracts';
-import { notifySuccess } from 'common-util/functions';
+import { notifyError, notifySuccess } from 'common-util/functions';
 import {
   SERVICE_ENDPOINT,
   SUPPORTED_CHAIN_IDS,
@@ -177,7 +177,7 @@ export default function DelegateBody() {
           })
           .catch((error) => {
             console.error('Error posting object:', error);
-            message.error('Error: Could not complete delegation.'); // Display error message
+            notifyError('Error: Could not complete delegation.'); // Display error message
           })
           .finally(() => {
             setDelegating(false);
