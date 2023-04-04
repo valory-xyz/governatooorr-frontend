@@ -58,6 +58,11 @@ const getTokenContractAbi = async (tokenAddress) => {
   }
 };
 
+const getFullTokenContractAbi = async (subTokenAddress) => {
+  const stringedTokenContractAbi = await getTokenContractAbi(subTokenAddress);
+  return stringedTokenContractAbi;
+};
+
 const createTokenContract = (tokenContractAbi) => {
   const { web3 } = getWeb3Details();
 
@@ -79,11 +84,6 @@ export default function DelegateBody() {
   const [tokenBalance, setTokenBalance] = useState('');
 
   const account = useSelector((state) => get(state, 'setup.account'));
-
-  const getFullTokenContractAbi = async (subTokenAddress) => {
-    const stringedTokenContractAbi = await getTokenContractAbi(subTokenAddress);
-    return stringedTokenContractAbi;
-  };
 
   const handleQueryCompleted = async (data) => {
     // eslint-disable-next-line max-len
