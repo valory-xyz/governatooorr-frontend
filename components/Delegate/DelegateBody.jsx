@@ -111,7 +111,7 @@ export default function DelegateBody() {
     setTokenAddress(selectedTokenAddress);
 
     // Get the governor ID for the selected token
-    await assignGovernor(selectedTokenAddress);
+    assignGovernor(selectedTokenAddress);
 
     const fullTokenContractAbi = await getFullTokenContractAbi(
       selectedTokenAddress,
