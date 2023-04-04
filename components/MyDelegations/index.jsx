@@ -3,10 +3,9 @@ import axios from 'axios';
 import { Card, Typography } from 'antd/lib';
 import { useSelector } from 'react-redux';
 import { get } from 'lodash';
+import { SERVICE_ENDPOINT } from 'util/constants';
 
 const { Title } = Typography;
-
-const serviceEndpoint = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
 
 const MyDelegations = () => {
   const [delegations, setDelegations] = useState([]);
@@ -17,7 +16,7 @@ const MyDelegations = () => {
     const getDelegations = async () => {
       try {
         const response = await axios.get(
-          `${serviceEndpoint}/delegations/${account}`,
+          `${SERVICE_ENDPOINT}/delegations/${account}`,
         );
         const { data } = response;
         setDelegations(data.data);

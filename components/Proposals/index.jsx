@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, Typography } from 'antd/lib';
+import { SERVICE_ENDPOINT } from 'util/constants';
 
 const { Title } = Typography;
-
-const serviceEndpoint = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
 
 const Proposals = () => {
   const [proposals, setProposals] = useState([]);
@@ -12,7 +11,7 @@ const Proposals = () => {
   useEffect(() => {
     const fetchProposals = async () => {
       try {
-        const response = await axios.get(`${serviceEndpoint}/proposals`);
+        const response = await axios.get(`${SERVICE_ENDPOINT}/proposals`);
         setProposals(response.data.data ?? []);
       } catch (error) {
         console.error('Error fetching proposals:', error);
@@ -24,14 +23,15 @@ const Proposals = () => {
 
   return (
     <Card className="content-card">
-      <Title level={3}>Past Votes</Title>
+      <Title level={3}>Governance Participation</Title>
       {proposals.length > 0 ? (
         <table>
           <thead>
             <tr>
-              <th className="text-left">Title</th>
+              <th className="text-left">Proposal</th>
               <th className="text-left">Governor</th>
-              <th className="text-left">Support</th>
+              <th className="text-left">Active?</th>
+              <th className="text-left">Governatooorr Vote</th>
             </tr>
           </thead>
           <tbody>
@@ -39,11 +39,8 @@ const Proposals = () => {
               <tr key={index}>
                 <td className="text-left">{proposal.title}</td>
                 <td className="text-left">{proposal.governor.name}</td>
-                <td>
-                  {proposal.voteStats.map((vote, otherIndex) => (
-                    <span key={otherIndex}>{vote.support}</span>
-                  ))}
-                </td>
+                <td>{proposal.active ? 'Pending' : 'Closed'}</td>
+                <td>{proposal.vote ? proposal.vote : 'No vote yet'}</td>
               </tr>
             ))}
           </tbody>

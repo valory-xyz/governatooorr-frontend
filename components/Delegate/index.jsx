@@ -1,19 +1,14 @@
-import PropTypes from 'prop-types';
 import ClientOnly from 'components/ClientOnly';
 import DelegateBody from './DelegateBody';
 
-function Delegate({ delegateeAddress }) {
+function Delegate() {
   return (
     <div>
       <ClientOnly>
-        <DelegateBody delegateeAddress={delegateeAddress} />
+        <DelegateBody />
       </ClientOnly>
     </div>
   );
 }
-
-Delegate.propTypes = {
-  delegateeAddress: PropTypes.string.isRequired,
-};
 
 export default Delegate;
