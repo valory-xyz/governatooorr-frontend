@@ -6,9 +6,9 @@ import { DELEGATEE_ADDRESS } from 'util/constants';
 
 const Home = () => (
   <>
-    <Row>
+    <Row gutter={12}>
       <Col xs={24} lg={10}>
-        <Delegate delegateeAddress={delegateeAddress} />
+        <Delegate />
         <MyDelegations />
 
         <Card className="form-card">

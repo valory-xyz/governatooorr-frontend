@@ -7,8 +7,6 @@ import { SERVICE_ENDPOINT } from 'util/constants';
 
 const { Title } = Typography;
 
-const serviceEndpoint = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
-
 const MyDelegations = () => {
   const [delegations, setDelegations] = useState([]);
 
