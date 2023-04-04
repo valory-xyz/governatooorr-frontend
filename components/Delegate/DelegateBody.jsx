@@ -62,7 +62,7 @@ const createTokenContract = (tokenContractAbi) => {
   const { web3 } = getWeb3Details();
 
   // Check if tokenContractAbi is not empty
-  if (tokenContractAbi && tokenContractAbi !== '') {
+  if (tokenContractAbi) {
     return new web3.eth.Contract(tokenContractAbi);
   }
   throw new Error('Token contract ABI is empty');
