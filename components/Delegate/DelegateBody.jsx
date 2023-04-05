@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useQuery, gql } from '@apollo/client';
 import {
-  Button, message, Card, Radio, Typography,
+  Button, Card, Radio, Typography,
 } from 'antd/lib';
 import axios from 'axios';
 import { getWeb3Details } from 'common-util/Contracts';
@@ -185,7 +185,7 @@ export default function DelegateBody() {
       }
     } catch (e) {
       console.error('Error occurred when delegating tokens:', e);
-      message.error('Error: Could not complete delegation.'); // Display error message
+      notifyError('Error: Could not complete delegation.'); // Display error message
       setDelegating(false);
     }
   };
