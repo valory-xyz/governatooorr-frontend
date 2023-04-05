@@ -93,7 +93,7 @@ const createTokenContract = (tokenContractAbi) => {
 };
 
 export default function DelegateBody() {
-  const [uniqueTokenAddress, setTokenAddress] = useState('');
+  const [uniqueTokenAddressAndIndex, setTokenAddress] = useState('');
   const [tokenContractAbi, setTokenContractAbi] = useState('');
   const [votingPreference, setVotingPreference] = useState('evil');
   const [delegating, setDelegating] = useState(false);
@@ -103,8 +103,8 @@ export default function DelegateBody() {
   const [tokenBalance, setTokenBalance] = useState('');
 
   const account = useSelector((state) => get(state, 'setup.account'));
-  const tokenAddress = uniqueTokenAddress
-    ? uniqueTokenAddress.split('-')[0]
+  const tokenAddress = uniqueTokenAddressAndIndex
+    ? uniqueTokenAddressAndIndex.split('-')[0]
     : '';
 
   const handleQueryCompleted = async (data) => {
@@ -248,7 +248,7 @@ export default function DelegateBody() {
           <br />
           <Select
             onChange={handleTokenAddressChange}
-            value={uniqueTokenAddress || undefined}
+            value={uniqueTokenAddressAndIndex || undefined}
             className="token-delegate-select"
             placeholder="Select value"
             options={availableTokens
