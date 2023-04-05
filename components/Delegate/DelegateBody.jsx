@@ -138,15 +138,6 @@ export default function DelegateBody() {
     setVotingPreference(event.target.value);
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const mockDelegateTokens = () => new Promise((resolve) => {
-    // Simulate a delay to mimic actual process
-    setTimeout(() => {
-      notifySuccess('Tokens delegated');
-      resolve('fake-id'); // Resolve with a fake id
-    }, 2000);
-  });
-
   const delegateTokens = () => new Promise((resolve, reject) => {
     const contract = createTokenContract(tokenContractAbi);
     contract.options.address = tokenAddress;
@@ -168,7 +159,7 @@ export default function DelegateBody() {
     try {
       setDelegating(true);
 
-      const id = await mockDelegateTokens();
+      const id = await delegateTokens();
 
       if (id) {
         const postPayload = {
