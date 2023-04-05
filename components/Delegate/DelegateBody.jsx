@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useQuery, gql } from '@apollo/client';
 import {
-  Button, Card, Radio, Typography,
+  Button, Card, Typography, Select, Radio,
 } from 'antd/lib';
 import axios from 'axios';
 import { getWeb3Details } from 'common-util/Contracts';
@@ -11,28 +11,41 @@ import { notifyError, notifySuccess } from 'common-util/functions';
 import {
   SERVICE_ENDPOINT,
   SUPPORTED_CHAIN_IDS,
-  SUPPORTED_GOVERNORS_ADDRESSES,
   DELEGATEE_ADDRESS,
   ACCEPTED_GOVERNOR_TYPES,
 } from 'util/constants';
 
 const { Text, Title } = Typography;
+const { Option } = Select;
 
 const QUERY = gql`
-  query Governors($chainIds: [ChainID!], $addresses: [AccountID!]) {
-    governors(chainIds: $chainIds, ids: $addresses) {
-      id
-      type
+query Governors($chainIds: [ChainID!], $addresses: [Address!], $ids: [AccountID!], $includeInactive: Boolean, $pagination: Pagination, $sort: GovernorSort) {
+  governors(
+    chainIds: $chainIds
+    addresses: $addresses
+    ids: $ids
+    includeInactive: $includeInactive
+    pagination: $pagination
+    sort: $sort
+  ) {
+    id
+    type
+    name
+    slug
+    tokens {
+      address
       name
-      slug
-      tokens {
-        address
-        name
-        symbol
-        type
-      }
+      symbol
+      type
+    }
+    proposalStats {
+      total
+      active
+      failed
+      passed
     }
   }
+}
 `;
 
 const getTokenContractAbi = async (tokenAddress) => {
@@ -92,7 +105,7 @@ export default function DelegateBody() {
     setAvailableTokens(
       governorBravoGovernors
         .flatMap((governor) => governor.tokens)
-        .filter((token) => token.type === 'ERC20'),
+        .filter((token) => token.type === 'ERC20' && token.symbol !== ''),
     );
 
     setGovernors(governorBravoGovernors);
@@ -106,8 +119,7 @@ export default function DelegateBody() {
     }
   };
 
-  const handleTokenAddressChange = async (event) => {
-    const selectedTokenAddress = event.target.value;
+  const handleTokenAddressChange = async (selectedTokenAddress) => {
     setTokenAddress(selectedTokenAddress);
 
     // Get the governor ID for the selected token
@@ -193,7 +205,16 @@ export default function DelegateBody() {
   const { loading, error } = useQuery(QUERY, {
     variables: {
       chainIds: SUPPORTED_CHAIN_IDS,
-      addresses: SUPPORTED_GOVERNORS_ADDRESSES,
+      addresses: [],
+      includeInactive: false,
+      sort: {
+        field: 'ACTIVE_PROPOSALS',
+        order: 'DESC',
+      },
+      pagination: {
+        limit: 200,
+        offset: 0,
+      },
     },
     onCompleted: (data) => handleQueryCompleted(data),
   });
@@ -214,19 +235,15 @@ export default function DelegateBody() {
         <div className="">
           <Text strong>Token to delegate</Text>
           <br />
-          <Radio.Group onChange={handleTokenAddressChange} value={tokenAddress}>
-            {availableTokens.map((token) => (
-              <>
-                <Radio key={token.address} value={token.address}>
-                  {`${token.symbol} - ${token.name}`}
-                </Radio>
-                <br />
-              </>
+          <Select onChange={handleTokenAddressChange} value={tokenAddress} className="token-delegate-select">
+            {availableTokens.filter((token) => token.symbol !== '').map((token) => (
+              <Option key={token.address} value={token.address}>
+                {`${token.symbol} - ${token.name}`}
+              </Option>
             ))}
-          </Radio.Group>
+          </Select>
         </div>
 
-        <br />
         <br />
 
         <div className="voting-preference">
@@ -252,22 +269,6 @@ export default function DelegateBody() {
         >
           Delegate
         </Button>
-
-        {/* TODO Remove after tests */}
-        {/* <pre>
-          {JSON.stringify(
-            {
-              address: account,
-              delegatedToken: tokenAddress,
-              votingPreference,
-              governorAddress,
-              tokenBalance,
-              tokenContractAbi,
-            },
-            undefined,
-            2,
-          )}
-        </pre> */}
 
         {!account && <div className="u-mt1">To delegate, connect a wallet</div>}
       </Card>
