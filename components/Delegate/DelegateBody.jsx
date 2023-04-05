@@ -16,36 +16,42 @@ import {
 } from 'util/constants';
 
 const { Text, Title } = Typography;
-const { Option } = Select;
 
 const QUERY = gql`
-query Governors($chainIds: [ChainID!], $addresses: [Address!], $ids: [AccountID!], $includeInactive: Boolean, $pagination: Pagination, $sort: GovernorSort) {
-  governors(
-    chainIds: $chainIds
-    addresses: $addresses
-    ids: $ids
-    includeInactive: $includeInactive
-    pagination: $pagination
-    sort: $sort
+  query Governors(
+    $chainIds: [ChainID!]
+    $addresses: [Address!]
+    $ids: [AccountID!]
+    $includeInactive: Boolean
+    $pagination: Pagination
+    $sort: GovernorSort
   ) {
-    id
-    type
-    name
-    slug
-    tokens {
-      address
-      name
-      symbol
+    governors(
+      chainIds: $chainIds
+      addresses: $addresses
+      ids: $ids
+      includeInactive: $includeInactive
+      pagination: $pagination
+      sort: $sort
+    ) {
+      id
       type
-    }
-    proposalStats {
-      total
-      active
-      failed
-      passed
+      name
+      slug
+      tokens {
+        address
+        name
+        symbol
+        type
+      }
+      proposalStats {
+        total
+        active
+        failed
+        passed
+      }
     }
   }
-}
 `;
 
 const getTokenContractAbi = async (tokenAddress) => {
@@ -87,7 +93,7 @@ const createTokenContract = (tokenContractAbi) => {
 };
 
 export default function DelegateBody() {
-  const [tokenAddress, setTokenAddress] = useState('');
+  const [uniqueTokenAddress, setTokenAddress] = useState('');
   const [tokenContractAbi, setTokenContractAbi] = useState('');
   const [votingPreference, setVotingPreference] = useState('evil');
   const [delegating, setDelegating] = useState(false);
@@ -97,6 +103,9 @@ export default function DelegateBody() {
   const [tokenBalance, setTokenBalance] = useState('');
 
   const account = useSelector((state) => get(state, 'setup.account'));
+  const tokenAddress = uniqueTokenAddress
+    ? uniqueTokenAddress.split('-')[0]
+    : '';
 
   const handleQueryCompleted = async (data) => {
     // eslint-disable-next-line max-len
@@ -119,8 +128,10 @@ export default function DelegateBody() {
     }
   };
 
-  const handleTokenAddressChange = async (selectedTokenAddress) => {
-    setTokenAddress(selectedTokenAddress);
+  const handleTokenAddressChange = async (value) => {
+    setTokenAddress(value);
+
+    const selectedTokenAddress = value.split('-')[0];
 
     // Get the governor ID for the selected token
     assignGovernor(selectedTokenAddress);
@@ -235,13 +246,18 @@ export default function DelegateBody() {
         <div className="">
           <Text strong>Token to delegate</Text>
           <br />
-          <Select onChange={handleTokenAddressChange} value={tokenAddress} className="token-delegate-select">
-            {availableTokens.filter((token) => token.symbol !== '').map((token) => (
-              <Option key={token.address} value={token.address}>
-                {`${token.symbol} - ${token.name}`}
-              </Option>
-            ))}
-          </Select>
+          <Select
+            onChange={handleTokenAddressChange}
+            value={uniqueTokenAddress || undefined}
+            className="token-delegate-select"
+            placeholder="Select value"
+            options={availableTokens
+              .filter((token) => token.symbol !== '')
+              .map((token, index) => ({
+                value: `${token.address}-${index}`,
+                label: `${token.symbol} - ${token.name}`,
+              }))}
+          />
         </div>
 
         <br />
