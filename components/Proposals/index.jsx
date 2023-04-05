@@ -12,7 +12,7 @@ const Proposals = () => {
     const fetchProposals = async () => {
       try {
         const response = await axios.get(`${SERVICE_ENDPOINT}/proposals`);
-        setProposals(response.data.data ?? []);
+        setProposals(response.data ?? []);
       } catch (error) {
         console.error('Error fetching proposals:', error);
       }
