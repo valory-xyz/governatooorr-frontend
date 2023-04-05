@@ -18,7 +18,7 @@ export const META_TAGS_INFO = {
   image: SITE_METATAG_IMAGE,
 };
 
-export const SERVICE_ENDPOINT = 'https://WrithingDependentApplicationprogram.oaksprout.repl.co';
+export const SERVICE_ENDPOINT = 'https://453734f64495a98c.agent.propel.autonolas.tech';
 
 export const SUPPORTED_CHAIN_IDS = ['eip155:1'];
 
@@ -27,6 +27,6 @@ export const SUPPORTED_GOVERNORS_ADDRESSES = [
   'eip155:1:0x1C9a7ced4CAdb9c5a65E564e73091912aaec7494',
 ];
 
-export const DELEGATEE_ADDRESS = '0x94825185b1dD96918635270ddA526254a0F2fbf1';
+export const DELEGATEE_ADDRESS = '0xc48b5D61fF082b49d19CAefd770D3C65028775b6';
 
 export const ACCEPTED_GOVERNOR_TYPES = ['GOVERNORBRAVO', 'OPENZEPPELINGOVERNOR'];
