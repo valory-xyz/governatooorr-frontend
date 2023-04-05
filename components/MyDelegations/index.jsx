@@ -35,7 +35,7 @@ const MyDelegations = () => {
       <Title level={3}>My Delegations</Title>
       {account ? (
         <>
-          {delegations.length > 0 ? (
+          {delegations?.length > 0 ? (
             <table>
               <thead>
                 <tr>

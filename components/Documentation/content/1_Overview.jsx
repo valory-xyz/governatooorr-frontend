@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable max-len */
 import { Typography } from 'antd/lib';
 import { DOCS_SECTIONS } from '../helpers';
 
@@ -9,45 +11,25 @@ const Overview = () => (
     <div id={DOCS_SECTIONS.overview}>
       <p>
         Governatooorr is a revolutionary autonomous service built using
-        Autonolas technology that empowers users to delegate their tokens and
-        influence decisions in Decentralized Autonomous Organizations (DAOs).
-        The platform is designed to provide users with a seamless experience
-        while participating in DAO governance.
+        {' '}
+        <a href="https://autonolas.network">Autonolas</a>
+        {' '}
+        technology that empowers users to delegate their tokens and influence decisions in Decentralized Autonomous Organizations (DAOs). The platform is designed to provide users with a seamless experience while participating in DAO governance. Please note that Governatooorr is not meant to be taken too seriously in its current form.
       </p>
 
-      <p>
-        Users can delegate their tokens to the Governatooorr autonomous service,
-        specifying their voting preference as either &quot;good&quot; or
-        &quot;bad.&quot; A &quot;good&quot; preference means the service will
-        vote for options that are beneficial to the DAO, while a &quot;bad&quot;
-        preference directs the service to vote for options that are not the most
-        advantageous for the DAO.
-      </p>
+      <p>Users can delegate their tokens to the Governatooorr autonomous service, specifying their voting preference as either "good" or "evil." A "good" preference means the service will vote for options that are beneficial to the DAO, while an "evil" preference directs the service to vote for options that are not the most advantageous for the DAO.</p>
+
+      <p>The Governatooorr service actively monitors relevant DAO forums for new proposals. Leveraging a cutting-edge Large Language Model (LLM) on the backend, it is able to analyze these proposals and suggest the most appropriate voting option based on the user's preference. The service then executes the vote accordingly, streamlining the decision-making process and ensuring that the user's voice is heard.</p>
 
       <p>
-        The Governatooorr service actively monitors relevant DAO forums for new
-        proposals. Leveraging a cutting-edge Large Language Model (LLM) on the
-        backend, it is able to analyze these proposals and suggest the most
-        appropriate voting option based on the user&apos;s preference. The
-        service then executes the vote accordingly, streamlining the
-        decision-making process and ensuring that the user&apos;s voice is
-        heard.
+        To manage prompts and orchestrate the language processing, Governatooorr utilizes OpenAI's powerful API. Learn more about OpenAI at
+        {' '}
+        <a href="https://www.openai.com">https://www.openai.com</a>
+        .
       </p>
 
-      <p>
-        To manage prompts and orchestrate the language processing, Governatooorr
-        utilizes Langchain, a powerful Python library. Learn more about
-        Langchain at https://python.langchain.com/en/latest/.
-      </p>
+      <p>In summary, Governatooorr is an innovative autonomous service that allows users to delegate their tokens and influence the future of DAOs according to their voting preferences. By employing advanced language models and Autonolas technology, Governatooorr simplifies the voting process and helps users to effectively participate in the dynamic world of decentralized governance. Keep in mind that this service is for experimental and entertainment purposes and should not be taken too seriously in its current form.</p>
 
-      <p>
-        In summary, Governatooorr is an innovative autonomous service that
-        allows users to delegate their tokens and influence the future of DAOs
-        according to their voting preferences. By employing advanced language
-        models and Autonolas technology, Governatooorr simplifies the voting
-        process and helps users to effectively participate in the dynamic world
-        of decentralized governance.
-      </p>
     </div>
   </>
 );

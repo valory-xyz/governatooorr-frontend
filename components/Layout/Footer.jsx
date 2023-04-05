@@ -11,8 +11,8 @@ const LIST = [
     isInternal: false,
   },
   {
-    text: 'Contracts',
-    redirectTo: 'https://etherscan.io/address/0xeF3B6E9e13706A8F01fe98fdCf66335dc5CfdEED',
+    text: 'Service on Protocol',
+    redirectTo: 'https://protocol.autonolas.network/services/5',
     isInternal: false,
   },
 ];
