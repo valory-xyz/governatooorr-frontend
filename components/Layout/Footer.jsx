@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { Typography } from 'antd/lib';
 import { ServiceStatusInfo } from '@autonolas/frontend-library';
-import { isGoerli } from 'common-util/functions';
 
 const { Text } = Typography;
 
@@ -13,9 +12,7 @@ const LIST = [
   },
   {
     text: 'Contracts',
-    redirectTo: isGoerli()
-      ? 'https://goerli.etherscan.io/address/0x7C3B976434faE9986050B26089649D9f63314BD8'
-      : 'https://etherscan.io/address/0x02c26437b292d86c5f4f21bbcce0771948274f84',
+    redirectTo: 'https://etherscan.io/address/0xeF3B6E9e13706A8F01fe98fdCf66335dc5CfdEED',
     isInternal: false,
   },
 ];
