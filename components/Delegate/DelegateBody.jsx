@@ -86,6 +86,19 @@ const createTokenContract = (tokenContractAbi) => {
   throw new Error('Token contract ABI is empty');
 };
 
+const getUniqueGovernorBravoGovernors = (governors) => governors
+  .filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type))
+  .reduce((accumulator, currentGovernor) => {
+    // eslint-disable-next-line max-len
+    const isDuplicate = accumulator.findIndex((governor) => governor.id === currentGovernor.id) !== -1;
+
+    if (!isDuplicate) {
+      accumulator.push(currentGovernor);
+    }
+
+    return accumulator;
+  }, []);
+
 export default function DelegateBody() {
   const [tokenAddress, setTokenAddress] = useState('');
   const [tokenContractAbi, setTokenContractAbi] = useState('');
@@ -100,7 +113,9 @@ export default function DelegateBody() {
 
   const handleQueryCompleted = async (data) => {
     // eslint-disable-next-line max-len
-    const governorBravoGovernors = data.governors.filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type));
+    const uniqueGovernorBravoGovernors = getUniqueGovernorBravoGovernors(data.governors);
+    // eslint-disable-next-line max-len
+    const governorBravoGovernors = uniqueGovernorBravoGovernors.filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type));
 
     setAvailableTokens(
       governorBravoGovernors
@@ -236,8 +251,8 @@ export default function DelegateBody() {
           <Text strong>Token to delegate</Text>
           <br />
           <Select onChange={handleTokenAddressChange} value={tokenAddress} className="token-delegate-select">
-            {availableTokens.filter((token) => token.symbol !== '').map((token) => (
-              <Option key={token.address} value={token.address}>
+            {availableTokens.filter((token) => token.symbol !== '').map((token, i) => (
+              <Option key={token.address + i} value={token.address}>
                 {`${token.symbol} - ${token.name}`}
               </Option>
             ))}
