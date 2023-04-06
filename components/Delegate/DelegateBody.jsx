@@ -252,7 +252,7 @@ export default function DelegateBody() {
           <br />
           <Select onChange={handleTokenAddressChange} value={tokenAddress} className="token-delegate-select">
             {availableTokens.filter((token) => token.symbol !== '').map((token, i) => (
-              <Option key={token.address + i} value={token.address}>
+              <Option key={`${token.address}-${i}`} value={token.address}>
                 {`${token.symbol} - ${token.name}`}
               </Option>
             ))}
