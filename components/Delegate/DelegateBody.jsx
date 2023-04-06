@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, uniqBy } from 'lodash';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useQuery, gql } from '@apollo/client';
@@ -86,18 +86,12 @@ const createTokenContract = (tokenContractAbi) => {
   throw new Error('Token contract ABI is empty');
 };
 
-const getUniqueGovernorBravoGovernors = (governors) => governors
-  .filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type))
-  .reduce((accumulator, currentGovernor) => {
-    // eslint-disable-next-line max-len
-    const isDuplicate = accumulator.findIndex((governor) => governor.id === currentGovernor.id) !== -1;
+const getUniqueGovernorBravoGovernors = (governors) => {
+  const filteredGovernors = governors
+    .filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type));
 
-    if (!isDuplicate) {
-      accumulator.push(currentGovernor);
-    }
-
-    return accumulator;
-  }, []);
+  return uniqBy(filteredGovernors, 'id');
+};
 
 export default function DelegateBody() {
   const [tokenAddress, setTokenAddress] = useState('');
@@ -114,16 +108,14 @@ export default function DelegateBody() {
   const handleQueryCompleted = async (data) => {
     // eslint-disable-next-line max-len
     const uniqueGovernorBravoGovernors = getUniqueGovernorBravoGovernors(data.governors);
-    // eslint-disable-next-line max-len
-    const governorBravoGovernors = uniqueGovernorBravoGovernors.filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type));
 
     setAvailableTokens(
-      governorBravoGovernors
+      uniqueGovernorBravoGovernors
         .flatMap((governor) => governor.tokens)
         .filter((token) => token.type === 'ERC20' && token.symbol !== ''),
     );
 
-    setGovernors(governorBravoGovernors);
+    setGovernors(uniqueGovernorBravoGovernors);
   };
 
   const assignGovernor = (selectedTokenAddress) => {
