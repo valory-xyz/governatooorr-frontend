@@ -11,6 +11,7 @@ import { notifyError, notifySuccess } from 'common-util/functions';
 import {
   SERVICE_ENDPOINT,
   SUPPORTED_CHAIN_IDS,
+  SUPPORTED_TOKEN_TYPES,
   DELEGATEE_ADDRESS,
   ACCEPTED_GOVERNOR_TYPES,
 } from 'util/constants';
@@ -93,6 +94,8 @@ const getUniqueGovernorBravoGovernors = (governors) => {
   return uniqBy(filteredGovernors, 'id');
 };
 
+export const isSupportedTokenType = (token) => SUPPORTED_TOKEN_TYPES.includes(token.type);
+
 export default function DelegateBody() {
   const [tokenAddress, setTokenAddress] = useState('');
   const [tokenContractAbi, setTokenContractAbi] = useState('');
@@ -112,7 +115,7 @@ export default function DelegateBody() {
     setAvailableTokens(
       uniqueGovernorBravoGovernors
         .flatMap((governor) => governor.tokens)
-        .filter((token) => token.type === 'ERC20' && token.symbol !== ''),
+        .filter((token) => isSupportedTokenType(token) && token.symbol !== ''),
     );
 
     setGovernors(uniqueGovernorBravoGovernors);
