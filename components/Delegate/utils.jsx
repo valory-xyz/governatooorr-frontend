@@ -43,6 +43,50 @@ export const QUERY = gql`
   }
 `;
 
+const ETHERSCAN_API = 'https://api.etherscan.io/api';
+
+/**
+ * if the contract is a proxy contract, returns the proxy contract address
+ * else returns the token address
+ *
+ * response of sourceCodeApi
+ * @example
+ * {
+ *  "status": "1",
+ *  "message": "OK",
+ *  "result": [
+ *   {
+ *     "ContractName": "InitializableAdminUpgradeabilityProxy",
+ *     "CompilerVersion": "v0.6.10+commit.00c0fcaf",
+ *     "OptimizationUsed": "1",
+ *     "Runs": "200",
+ *     "ConstructorArguments": "",
+ *     "EVMVersion": "Default",
+ *     "Library": "",
+ *     "LicenseType": "",
+ *     "Proxy": "1", // proxy contract if 1 else 0
+ *     "Implementation": "0x96f68837877fd0414b55050c9e794aecdbcfca59",
+ *     "SwarmSource": ""
+ *   }
+ *  ]
+ * }
+ */
+const getContractAddress = async (tokenAddress) => {
+  const sourceCodeApi = `${ETHERSCAN_API}?module=contract&action=getsourcecode&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
+
+  try {
+    const response = await axios.get(sourceCodeApi);
+    const proxyAddress = response.data.result[0].Implementation;
+
+    // if proxyAddress is null, then the contract is not a proxy contract
+    return proxyAddress || tokenAddress;
+  } catch (error) {
+    console.error('Error retrieving Proxy contract ABI', error);
+  }
+
+  throw new Error('No Proxy contract address found');
+};
+
 // create a function and get proxy contract using token address through etherscan api
 export const getContractProxyAbi = async (tokenAddress) => {
   console.log('getContractProxyAbi START');
@@ -153,8 +197,6 @@ export const getFullTokenContractAbi = async (subTokenAddress) => {
 
 export const createTokenContract = (token) => {
   const { web3 } = getWeb3Details();
-  console.log(token);
-  console.log(web3);
 
   // Check if tokenContractAbi is not empty
   if (token) {
