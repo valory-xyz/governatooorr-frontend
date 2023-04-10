@@ -28,7 +28,7 @@ Navbar.propTypes = {
   menuItems: PropTypes.arrayOf(
     PropTypes.shape({
       key: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
     }),
   ).isRequired,
 };
