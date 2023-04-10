@@ -1,119 +1,30 @@
-import { get, uniqBy } from 'lodash';
+import { get } from 'lodash';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import {
   Button, Card, Typography, Select, Radio,
 } from 'antd/lib';
 import axios from 'axios';
-import { getWeb3Details } from 'common-util/Contracts';
 import { notifyError, notifySuccess } from 'common-util/functions';
 import {
   SERVICE_ENDPOINT,
   SUPPORTED_CHAIN_IDS,
-  SUPPORTED_TOKEN_TYPES,
   DELEGATEE_ADDRESS,
-  ACCEPTED_GOVERNOR_TYPES,
 } from 'util/constants';
-import { DEFAULT_ERC20_ABI } from 'common-util/AbiAndAddresses';
+import {
+  QUERY,
+  getFullTokenContractAbi,
+  createTokenContract,
+  getUniqueGovernorBravoGovernors,
+  isSupportedTokenType,
+} from './utils';
 
 const { Text, Title } = Typography;
-const { Option } = Select;
-
-const QUERY = gql`
-query Governors($chainIds: [ChainID!], $addresses: [Address!], $ids: [AccountID!], $includeInactive: Boolean, $pagination: Pagination, $sort: GovernorSort) {
-  governors(
-    chainIds: $chainIds
-    addresses: $addresses
-    ids: $ids
-    includeInactive: $includeInactive
-    pagination: $pagination
-    sort: $sort
-  ) {
-    id
-    type
-    name
-    slug
-    tokens {
-      address
-      name
-      symbol
-      type
-    }
-    proposalStats {
-      total
-      active
-      failed
-      passed
-    }
-  }
-}
-`;
-
-const getTokenContractAbi = async (tokenAddress) => {
-  const etherscanApiUrl = `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
-
-  try {
-    const response = await axios.get(etherscanApiUrl);
-
-    if (response.status !== 200) {
-      throw new Error(`Error retrieving token contract ABI: Status ${response.status}`);
-    }
-
-    const stringedTokenContractAbi = response.data.result;
-    if (!stringedTokenContractAbi) {
-      console.warn('No contract ABI available to retrieve. Falling back to default ABI.');
-      return DEFAULT_ERC20_ABI;
-    }
-
-    const parsedAbi = JSON.parse(stringedTokenContractAbi);
-    const hasBalanceOf = parsedAbi.some((entry) => entry.name === 'balanceOf');
-    const hasDelegate = parsedAbi.some((entry) => entry.name === 'delegate');
-
-    if (!hasBalanceOf) {
-      console.warn('Using default ERC20 ABI due to missing balanceOf function');
-      return DEFAULT_ERC20_ABI;
-    }
-
-    if (!hasDelegate) {
-      console.warn('Using default ERC20 ABI due to missing delegate function');
-      return DEFAULT_ERC20_ABI;
-    }
-
-    return parsedAbi;
-  } catch (e) {
-    console.error('Error retrieving token contract ABI:', e);
-    throw new Error('Error retrieving token contract ABI');
-  }
-};
-
-const getFullTokenContractAbi = async (subTokenAddress) => {
-  const stringedTokenContractAbi = await getTokenContractAbi(subTokenAddress);
-  return stringedTokenContractAbi;
-};
-
-const createTokenContract = (tokenContractAbi) => {
-  const { web3 } = getWeb3Details();
-
-  // Check if tokenContractAbi is not empty
-  if (tokenContractAbi) {
-    return new web3.eth.Contract(tokenContractAbi);
-  }
-  throw new Error('Token contract ABI is empty');
-};
-
-const getUniqueGovernorBravoGovernors = (governors) => {
-  const filteredGovernors = governors
-    .filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type));
-
-  return uniqBy(filteredGovernors, 'id');
-};
-
-export const isSupportedTokenType = (token) => SUPPORTED_TOKEN_TYPES.includes(token.type);
 
 export default function DelegateBody() {
   const [tokenAddress, setTokenAddress] = useState('');
-  const [tokenContractAbi, setTokenContractAbi] = useState('');
+  const [tokenContractAbi, setTokenContractAbi] = useState(null);
   const [votingPreference, setVotingPreference] = useState('evil');
   const [delegating, setDelegating] = useState(false);
   const [availableTokens, setAvailableTokens] = useState([]);
@@ -124,8 +35,9 @@ export default function DelegateBody() {
   const account = useSelector((state) => get(state, 'setup.account'));
 
   const handleQueryCompleted = async (data) => {
-    // eslint-disable-next-line max-len
-    const uniqueGovernorBravoGovernors = getUniqueGovernorBravoGovernors(data.governors);
+    const uniqueGovernorBravoGovernors = getUniqueGovernorBravoGovernors(
+      data.governors,
+    );
 
     setAvailableTokens(
       uniqueGovernorBravoGovernors
@@ -145,6 +57,8 @@ export default function DelegateBody() {
   };
 
   const handleTokenAddressChange = async (selectedTokenAddress) => {
+    console.log('handleTokenAddressChange', selectedTokenAddress);
+
     setTokenAddress(selectedTokenAddress);
 
     // Get the governor ID for the selected token
@@ -175,18 +89,24 @@ export default function DelegateBody() {
     setVotingPreference(event.target.value);
   };
 
+  console.log(tokenContractAbi);
+
   const delegateTokens = () => new Promise((resolve, reject) => {
     const contract = createTokenContract(tokenContractAbi);
     contract.options.address = tokenAddress;
+
+    console.log(1, DELEGATEE_ADDRESS);
 
     contract.methods
       .delegate(DELEGATEE_ADDRESS)
       .send({ from: account })
       .then((response) => {
+        console.log(2);
         const id = get(response, 'events.Transfer.returnValues.id');
         resolve(id);
       })
       .catch((e) => {
+        console.log(3);
         window.console.log('Error occurred when delegating tokens');
         reject(e);
       });
@@ -260,13 +180,20 @@ export default function DelegateBody() {
         <div className="">
           <Text strong>Token to delegate</Text>
           <br />
-          <Select onChange={handleTokenAddressChange} value={tokenAddress} className="token-delegate-select">
-            {availableTokens.filter((token) => token.symbol !== '').map((token, i) => (
-              <Option key={`${token.address}-${i}`} value={token.address}>
-                {`${token.symbol} - ${token.name}`}
-              </Option>
-            ))}
-          </Select>
+          <Select
+            showSearch
+            onChange={handleTokenAddressChange}
+            value={tokenAddress}
+            className="token-delegate-select"
+            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+            options={availableTokens
+              .filter((token) => token.symbol !== '')
+              .map((token, i) => ({
+                key: `${token.address}-${i}`,
+                value: token.address,
+                label: `${token.symbol} - ${token.name}`,
+              }))}
+          />
         </div>
 
         <br />
@@ -288,7 +215,7 @@ export default function DelegateBody() {
 
         <Button
           type="primary"
-          onClick={() => handleDelegate()}
+          onClick={handleDelegate}
           loading={delegating}
           disabled={!account}
         >
