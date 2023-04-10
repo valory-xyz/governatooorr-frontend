@@ -55,7 +55,7 @@ export const getContractProxyAbi = async (tokenAddress) => {
         `Error retrieving token contract ABI: Status ${response.status}`,
       );
     }
-    const stringedTokenContractAbi = response.data;
+    const stringedTokenContractAbi = response.data.result[0];
     console.log(stringedTokenContractAbi);
     // if (!stringedTokenContractAbi) {
     //   console.warn(
@@ -64,6 +64,23 @@ export const getContractProxyAbi = async (tokenAddress) => {
     //   return DEFAULT_ERC20_ABI;
     // }
     const parsedAbi = JSON.parse(stringedTokenContractAbi);
+    // https://stackoverflow.com/a/74771952
+    // console.log(parsedAbi);
+
+    if (stringedTokenContractAbi.includes('implementation')) {
+      // const hasBalanceOf = parsedAbi.find((entry) => entry.name === 'implementation');
+      const { web3 } = getWeb3Details();
+      const contract = new web3.eth.Contract(parsedAbi, tokenAddress);
+      const abc = await contract.methods.implementation().send({
+        from: '0xe3D1fB73D21895286aef7063444d173626eb9C9E',
+      });
+      console.log(abc);
+      // const abc = await web3.eth.getTransactionReceipt(
+      //   tokenAddress,
+      // );
+      // console.log(abc);
+    }
+
     return parsedAbi;
   } catch (e) {
     console.log(e);
@@ -95,6 +112,7 @@ const getTokenContractAbi = async (tokenAddress) => {
 
     await getContractProxyAbi(tokenAddress);
     const parsedAbi = JSON.parse(stringedTokenContractAbi);
+
     const hasBalanceOf = parsedAbi.some((entry) => entry.name === 'balanceOf');
     const hasDelegate = parsedAbi.some((entry) => entry.name === 'delegate');
 
@@ -107,6 +125,19 @@ const getTokenContractAbi = async (tokenAddress) => {
       console.warn('Using default ERC20 ABI due to missing delegate function');
       return DEFAULT_ERC20_ABI;
     }
+
+    // if (stringedTokenContractAbi.includes('implementation')) {
+    //   // const hasBalanceOf = parsedAbi.find((entry) => entry.name === 'implementation');
+    //   const { web3 } = getWeb3Details();
+    //   const contract = new web3.eth.Contract(parsedAbi, tokenAddress);
+
+    //   console.log(contract);
+
+    //   const abc = await contract.methods
+    //     .implementation()
+    //     .send({ from: '0xe3D1fB73D21895286aef7063444d173626eb9C9E' });
+    //   console.log(abc);
+    // }
 
     return parsedAbi;
   } catch (e) {
