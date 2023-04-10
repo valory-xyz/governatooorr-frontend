@@ -15,6 +15,7 @@ import {
   DELEGATEE_ADDRESS,
   ACCEPTED_GOVERNOR_TYPES,
 } from 'util/constants';
+import { DEFAULT_ERC20_ABI } from 'common-util/AbiAndAddresses';
 
 const { Text, Title } = Typography;
 const { Option } = Select;
@@ -56,16 +57,30 @@ const getTokenContractAbi = async (tokenAddress) => {
     const response = await axios.get(etherscanApiUrl);
 
     if (response.status !== 200) {
-      throw new Error(
-        `Error retrieving token contract ABI: Status ${response.status}`,
-      );
+      throw new Error(`Error retrieving token contract ABI: Status ${response.status}`);
     }
 
     const stringedTokenContractAbi = response.data.result;
     if (!stringedTokenContractAbi) {
-      throw new Error('Token contract ABI is empty');
+      console.warn('No contract ABI available to retrieve. Falling back to default ABI.');
+      return DEFAULT_ERC20_ABI;
     }
-    return JSON.parse(stringedTokenContractAbi);
+
+    const parsedAbi = JSON.parse(stringedTokenContractAbi);
+    const hasBalanceOf = parsedAbi.some((entry) => entry.name === 'balanceOf');
+    const hasDelegate = parsedAbi.some((entry) => entry.name === 'delegate');
+
+    if (!hasBalanceOf) {
+      console.warn('Using default ERC20 ABI due to missing balanceOf function');
+      return DEFAULT_ERC20_ABI;
+    }
+
+    if (!hasDelegate) {
+      console.warn('Using default ERC20 ABI due to missing delegate function');
+      return DEFAULT_ERC20_ABI;
+    }
+
+    return parsedAbi;
   } catch (e) {
     console.error('Error retrieving token contract ABI:', e);
     throw new Error('Error retrieving token contract ABI');
