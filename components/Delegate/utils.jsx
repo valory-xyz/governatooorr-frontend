@@ -4,6 +4,8 @@ import axios from 'axios';
 import { getWeb3Details } from 'common-util/Contracts';
 import { SUPPORTED_TOKEN_TYPES, ACCEPTED_GOVERNOR_TYPES } from 'util/constants';
 
+const ETHERSCAN_URL = 'https://api.etherscan.io/api';
+
 export const QUERY = gql`
   query Governors(
     $chainIds: [ChainID!]
@@ -41,11 +43,9 @@ export const QUERY = gql`
   }
 `;
 
-const ETHERSCAN_API = 'https://api.etherscan.io/api';
-
 /**
  * if the contract is a proxy contract, returns the proxy contract address
- * else returns the token address
+ * else returns the token address (which is received as a parameter)
  *
  * response of sourceCodeApi
  * @example
@@ -70,10 +70,10 @@ const ETHERSCAN_API = 'https://api.etherscan.io/api';
  * }
  */
 const getContractAddress = async (tokenAddress) => {
-  const sourceCodeApi = `${ETHERSCAN_API}?module=contract&action=getsourcecode&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
-
   try {
-    const response = await axios.get(sourceCodeApi);
+    const response = await axios.get(
+      `${ETHERSCAN_URL}?module=contract&action=getsourcecode&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
+    );
     const proxyAddress = response.data.result[0].Implementation;
 
     // if proxyAddress is null, then the contract is not a proxy contract
@@ -89,8 +89,10 @@ const getContractAddress = async (tokenAddress) => {
 const getTokenContractAbi = async (tokenAddress) => {
   try {
     const address = await getContractAddress(tokenAddress);
-    const etherscanApiUrl = `${ETHERSCAN_API}?module=contract&action=getabi&address=${address}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
-    const response = await axios.get(etherscanApiUrl);
+
+    const response = await axios.get(
+      `${ETHERSCAN_URL}?module=contract&action=getabi&address=${address}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
+    );
 
     if (response.status !== 200) {
       throw new Error(
