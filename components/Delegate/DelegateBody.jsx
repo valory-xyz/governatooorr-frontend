@@ -57,8 +57,6 @@ export default function DelegateBody() {
   };
 
   const handleTokenAddressChange = async (selectedTokenAddress) => {
-    console.log('handleTokenAddressChange', selectedTokenAddress);
-
     setTokenAddress(selectedTokenAddress);
 
     // Get the governor ID for the selected token
@@ -89,24 +87,18 @@ export default function DelegateBody() {
     setVotingPreference(event.target.value);
   };
 
-  console.log(tokenContractAbi);
-
   const delegateTokens = () => new Promise((resolve, reject) => {
     const contract = createTokenContract(tokenContractAbi);
     contract.options.address = tokenAddress;
-
-    console.log(1, DELEGATEE_ADDRESS);
 
     contract.methods
       .delegate(DELEGATEE_ADDRESS)
       .send({ from: account })
       .then((response) => {
-        console.log(2);
         const id = get(response, 'events.Transfer.returnValues.id');
         resolve(id);
       })
       .catch((e) => {
-        console.log(3);
         window.console.log('Error occurred when delegating tokens');
         reject(e);
       });
@@ -117,7 +109,6 @@ export default function DelegateBody() {
       setDelegating(true);
 
       const id = await delegateTokens();
-
       if (id) {
         const postPayload = {
           address: account,

@@ -85,6 +85,7 @@ const getContractAddress = async (tokenAddress) => {
   throw new Error('No Proxy contract address found');
 };
 
+// returns the ABI of the token contract
 const getTokenContractAbi = async (tokenAddress) => {
   try {
     const address = await getContractAddress(tokenAddress);
