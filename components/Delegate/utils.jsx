@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import axios from 'axios';
-import { uniqBy, get } from 'lodash';
+import { uniqBy } from 'lodash';
 import { getWeb3Details } from 'common-util/Contracts';
 import {
   SUPPORTED_TOKEN_TYPES,
@@ -73,16 +73,15 @@ export const QUERY = gql`
  *  ]
  * }
  */
-const getContractAddress = async (tokenAddress) => {
+const getContractOrProxyAddress = async (tokenAddress) => {
   try {
     const response = await axios.get(
       `${ETHERSCAN_URL}?module=contract&action=getsourcecode&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
     );
     const proxyAddress = response.data.result[0].Implementation;
 
-    console.log({ proxyAddress });
+    // if proxyAddress is null, then the contract is not a proxy contract so return the tokenAddress
 
-    // if proxyAddress is null, then the contract is not a proxy contract
     return proxyAddress || tokenAddress;
   } catch (error) {
     console.error('Error retrieving Proxy contract ABI', error);
@@ -94,7 +93,7 @@ const getContractAddress = async (tokenAddress) => {
 // returns the ABI of the token contract
 export const getTokenContractAbi = async (tokenAddress) => {
   try {
-    const proxyAddress = await getContractAddress(tokenAddress);
+    const proxyAddress = await getContractOrProxyAddress(tokenAddress);
 
     const response = await axios.get(
       `${ETHERSCAN_URL}?module=contract&action=getabi&address=${proxyAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
@@ -108,9 +107,20 @@ export const getTokenContractAbi = async (tokenAddress) => {
 
     const stringedTokenContractAbi = response.data.result;
     const parsedAbi = JSON.parse(stringedTokenContractAbi);
+
+    // if the ABI does not have the delegate method, then throw an error
+    if (!parsedAbi.find(({ name }) => name === 'delegate')) {
+      throw new Error('Delegate method not found in the ABI');
+    }
+
+    // similarly for balanceOF
+    if (!parsedAbi.find(({ name }) => name === 'balanceOf')) {
+      throw new Error('balanceOf method not found in the ABI');
+    }
+
     return { parsedAbi, proxyAddress };
   } catch (e) {
-    console.error('Error retrieving token contract ABI:', e);
+    console.error(e);
     throw new Error('Error retrieving token contract ABI');
   }
 };
@@ -144,37 +154,34 @@ export const delegateTokensRequest = ({
 }) => new Promise((resolve, reject) => {
   const contract = createTokenContract(tokenContractAbi, tokenAddress);
 
+  // Delegate tokens
   contract.methods
     .delegate(DELEGATEE_ADDRESS)
     .send({ from: account })
-    .then((response) => {
-      console.log(response);
-      const id = get(
-        response,
-        'events.DelegateChanged.returnValues.toDelegate',
-      );
-
-      // if the id is equal to the delegatee address, then the delegation was successful
-      // resolve(id === DELEGATEE_ADDRESS);
-    })
+    .then(() => {})
     .catch((e) => {
       window.console.log('Error occurred when delegating tokens');
       reject(e);
     });
 
+  // wait for the DelegateChanged event to be emitted
   contract.events
     .DelegateChanged()
     .on('data', (event) => {
       window.console.log({ event });
       const { returnValues } = event;
-      const { toDelegate } = returnValues;
-      if (toDelegate === DELEGATEE_ADDRESS) {
+      const { toDelegate, delegator } = returnValues;
+
+      // if the delegatee address is same as the DELEGATEE_ADDRESS and
+      // the delegator is same as the account,
+      // then resolve
+      if (toDelegate === DELEGATEE_ADDRESS && delegator === account) {
         resolve(true);
       }
     })
     .on('error', (error) => {
       window.console.log(
-        'Error occurred when listening to the Transfer event',
+        'Error occurred when listening to the DelegateChanged event',
       );
       reject(error);
     });
