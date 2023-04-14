@@ -92,12 +92,12 @@ const getContractAddress = async (tokenAddress) => {
 };
 
 // returns the ABI of the token contract
-const getTokenContractAbi = async (tokenAddress) => {
+export const getTokenContractAbi = async (tokenAddress) => {
   try {
-    const address = await getContractAddress(tokenAddress);
+    const proxyAddress = await getContractAddress(tokenAddress);
 
     const response = await axios.get(
-      `${ETHERSCAN_URL}?module=contract&action=getabi&address=${address}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
+      `${ETHERSCAN_URL}?module=contract&action=getabi&address=${proxyAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
     );
 
     if (response.status !== 200 && response.data.status !== '1') {
@@ -106,32 +106,24 @@ const getTokenContractAbi = async (tokenAddress) => {
       );
     }
 
-    console.log(response);
-
     const stringedTokenContractAbi = response.data.result;
     const parsedAbi = JSON.parse(stringedTokenContractAbi);
-    console.log(parsedAbi);
-    return parsedAbi;
+    return { parsedAbi, proxyAddress };
   } catch (e) {
     console.error('Error retrieving token contract ABI:', e);
     throw new Error('Error retrieving token contract ABI');
   }
 };
 
-export const getFullTokenContractAbi = async (subTokenAddress) => {
-  const stringedTokenContractAbi = await getTokenContractAbi(subTokenAddress);
-  return stringedTokenContractAbi;
-};
-
 export const createTokenContract = (abi, token) => {
   const { web3 } = getWeb3Details();
 
-  // Check if tokenContractAbi is not empty
+  // Check if abi & token is not empty
   if (abi && token) {
     return new web3.eth.Contract(abi, token);
   }
 
-  throw new Error('Token contract ABI is empty');
+  throw new Error('Contract ABI or token is empty');
 };
 
 export const getUniqueGovernorBravoGovernors = (governors) => {
@@ -156,31 +148,34 @@ export const delegateTokensRequest = ({
     .delegate(DELEGATEE_ADDRESS)
     .send({ from: account })
     .then((response) => {
-      // const id = get(response, 'events.Transfer.returnValues.id');
-      // resolve(id);
-      window.console.log(
-        { response },
+      console.log(response);
+      const id = get(
+        response,
+        'events.DelegateChanged.returnValues.toDelegate',
       );
-      // listen to the delegate event & check if the delegatee address is correct
-      contract.events
-        .DelegateChanged()
-        .on('data', (event) => {
-          window.console.log('Transfer event data:', event);
-          const { returnValues } = event;
-          const { delegatee } = returnValues;
-          if (delegatee === DELEGATEE_ADDRESS) {
-            resolve(true);
-          }
-        })
-        .on('error', (error) => {
-          window.console.log(
-            'Error occurred when listening to the Transfer event',
-          );
-          reject(error);
-        });
+
+      // if the id is equal to the delegatee address, then the delegation was successful
+      // resolve(id === DELEGATEE_ADDRESS);
     })
     .catch((e) => {
       window.console.log('Error occurred when delegating tokens');
       reject(e);
+    });
+
+  contract.events
+    .DelegateChanged()
+    .on('data', (event) => {
+      window.console.log({ event });
+      const { returnValues } = event;
+      const { toDelegate } = returnValues;
+      if (toDelegate === DELEGATEE_ADDRESS) {
+        resolve(true);
+      }
+    })
+    .on('error', (error) => {
+      window.console.log(
+        'Error occurred when listening to the Transfer event',
+      );
+      reject(error);
     });
 });

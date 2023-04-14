@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useQuery } from '@apollo/client';
 import {
@@ -7,22 +7,22 @@ import {
 } from 'antd/lib';
 import axios from 'axios';
 import { notifyError, notifySuccess } from 'common-util/functions';
-import {
-  SERVICE_ENDPOINT,
-  SUPPORTED_CHAIN_IDS,
-  DELEGATEE_ADDRESS,
-} from 'util/constants';
+import { SERVICE_ENDPOINT, SUPPORTED_CHAIN_IDS } from 'util/constants';
 import {
   QUERY,
-  getFullTokenContractAbi,
+  getTokenContractAbi,
   createTokenContract,
   getUniqueGovernorBravoGovernors,
   isSupportedTokenType,
+  delegateTokensRequest,
 } from './utils';
 
 const { Text, Title } = Typography;
 
 export default function DelegateBody() {
+  // proxy address can be token address or proxy contract address
+  const [proxyAddress, setProxyAddress] = useState('');
+
   const [tokenAddress, setTokenAddress] = useState('');
   const [tokenContractAbi, setTokenContractAbi] = useState(null);
   const [votingPreference, setVotingPreference] = useState('evil');
@@ -33,6 +33,38 @@ export default function DelegateBody() {
   const [tokenBalance, setTokenBalance] = useState('');
 
   const account = useSelector((state) => get(state, 'setup.account'));
+
+  // if tokenAddress is not empty, fetch the token contract abi
+  useEffect(() => {
+    const updateTokenBalance = async () => {
+      // Get the governor ID for the selected token
+      // eslint-disable-next-line max-len
+      const selectedGovernor = governors.find(({ tokens }) => tokens.some((token) => token.address === tokenAddress));
+      if (selectedGovernor && tokenAddress) {
+        setGovernorAddress(selectedGovernor.id.split(':').pop());
+      }
+
+      const { parsedAbi, proxyAddress: pAddress } = await getTokenContractAbi(
+        tokenAddress,
+      );
+      setProxyAddress(pAddress);
+      setTokenContractAbi(parsedAbi);
+
+      const tokenContract = createTokenContract(parsedAbi, pAddress);
+
+      try {
+        const balance = await tokenContract.methods.balanceOf(account).call();
+        setTokenBalance(balance);
+      } catch (error) {
+        console.error('Error fetching token balance:', error);
+        setTokenBalance('');
+      }
+    };
+
+    if (account && tokenAddress) {
+      updateTokenBalance();
+    }
+  }, [tokenAddress]);
 
   const handleQueryCompleted = async (data) => {
     const uniqueGovernorBravoGovernors = getUniqueGovernorBravoGovernors(
@@ -48,68 +80,17 @@ export default function DelegateBody() {
     setGovernors(uniqueGovernorBravoGovernors);
   };
 
-  const assignGovernor = (selectedTokenAddress) => {
-    // eslint-disable-next-line max-len
-    const selectedGovernor = governors.find((governor) => governor.tokens.some((token) => token.address === selectedTokenAddress));
-    if (selectedGovernor && selectedTokenAddress) {
-      setGovernorAddress(selectedGovernor.id.split(':').pop());
-    }
-  };
-
-  const handleTokenAddressChange = async (selectedTokenAddress) => {
-    setTokenAddress(selectedTokenAddress);
-
-    // Get the governor ID for the selected token
-    assignGovernor(selectedTokenAddress);
-
-    const fullTokenContractAbi = await getFullTokenContractAbi(
-      selectedTokenAddress,
-    );
-    setTokenContractAbi(fullTokenContractAbi);
-
-    const updateTokenBalance = async () => {
-      const tokenContract = createTokenContract(fullTokenContractAbi);
-      tokenContract.options.address = selectedTokenAddress;
-
-      try {
-        const balance = await tokenContract.methods.balanceOf(account).call();
-        setTokenBalance(balance);
-      } catch (error) {
-        console.error('Error fetching token balance:', error);
-        setTokenBalance('');
-      }
-    };
-
-    await updateTokenBalance();
-  };
-
-  const handleVotingPreferenceChange = (event) => {
-    setVotingPreference(event.target.value);
-  };
-
-  const delegateTokens = () => new Promise((resolve, reject) => {
-    const contract = createTokenContract(tokenContractAbi);
-    contract.options.address = tokenAddress;
-
-    contract.methods
-      .delegate(DELEGATEE_ADDRESS)
-      .send({ from: account })
-      .then((response) => {
-        const id = get(response, 'events.Transfer.returnValues.id');
-        resolve(id);
-      })
-      .catch((e) => {
-        window.console.log('Error occurred when delegating tokens');
-        reject(e);
-      });
-  });
-
   const handleDelegate = async () => {
     try {
       setDelegating(true);
 
-      const id = await delegateTokens();
-      if (id) {
+      const isDelegated = await delegateTokensRequest({
+        account,
+        tokenContractAbi,
+        tokenAddress: proxyAddress,
+      });
+
+      if (isDelegated) {
         const postPayload = {
           address: account,
           delegatedToken: tokenAddress,
@@ -125,7 +106,7 @@ export default function DelegateBody() {
           })
           .catch((error) => {
             console.error('Error posting object:', error);
-            notifyError('Error: Could not complete delegation.'); // Display error message
+            notifyError('Error: Could not complete delegation.');
           })
           .finally(() => {
             setDelegating(false);
@@ -156,7 +137,7 @@ export default function DelegateBody() {
   });
 
   if (loading) {
-    return <div className="card form-card u-text-align-center">Loading...</div>;
+    return <Card className="form-card">Loading...</Card>;
   }
 
   if (error) {
@@ -168,12 +149,13 @@ export default function DelegateBody() {
     <>
       <Card className="form-card">
         <Title level={3}>Delegate</Title>
-        <div className="">
+
+        <div>
           <Text strong>Token to delegate</Text>
           <br />
           <Select
             showSearch
-            onChange={handleTokenAddressChange}
+            onChange={(value) => setTokenAddress(value)}
             value={tokenAddress}
             className="token-delegate-select"
             filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
@@ -194,7 +176,7 @@ export default function DelegateBody() {
           <br />
 
           <Radio.Group
-            onChange={handleVotingPreferenceChange}
+            onChange={(event) => setVotingPreference(event.target.value)}
             value={votingPreference}
           >
             <Radio value="good">Good</Radio>
@@ -208,7 +190,7 @@ export default function DelegateBody() {
           type="primary"
           onClick={handleDelegate}
           loading={delegating}
-          disabled={!account}
+          disabled={!account || !tokenContractAbi || !tokenAddress}
         >
           Delegate
         </Button>
