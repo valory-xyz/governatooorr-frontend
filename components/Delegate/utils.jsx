@@ -143,6 +143,8 @@ export const getUniqueGovernorBravoGovernors = (governors) => {
 
 export const isSupportedTokenType = (token) => SUPPORTED_TOKEN_TYPES.includes(token.type);
 
+const areStringSame = (a, b) => a.toLowerCase() === b.toLowerCase();
+
 /**
  * Contract call to delegate tokens
  */
@@ -154,11 +156,19 @@ export const delegateTokensRequest = ({
 }) => new Promise((resolve, reject) => {
   const contract = createTokenContract(tokenContractAbi, tokenAddress);
 
+  console.log('delegateTokensRequest', {
+    account,
+    tokenAddress,
+    tokenContractAbi,
+  });
+
   // Delegate tokens
   contract.methods
     .delegate(DELEGATEE_ADDRESS)
     .send({ from: account })
-    .then(() => {})
+    .then((response) => {
+      console.log(response);
+    })
     .catch((e) => {
       window.console.log('Error occurred when delegating tokens');
       reject(e);
@@ -169,13 +179,19 @@ export const delegateTokensRequest = ({
     .DelegateChanged()
     .on('data', (event) => {
       window.console.log({ event });
+      console.log(event);
+
       const { returnValues } = event;
-      const { toDelegate, delegator } = returnValues;
+      const { delegatee, toDelegate, delegator } = returnValues;
+      const otherDelegatee = toDelegate || delegatee;
 
       // if the delegatee address is same as the DELEGATEE_ADDRESS and
       // the delegator is same as the account,
       // then resolve
-      if (toDelegate === DELEGATEE_ADDRESS && delegator === account) {
+      if (
+        areStringSame(otherDelegatee, DELEGATEE_ADDRESS)
+          && areStringSame(delegator, account)
+      ) {
         resolve(true);
       }
     })
