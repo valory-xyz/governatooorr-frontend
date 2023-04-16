@@ -156,18 +156,12 @@ export const delegateTokensRequest = ({
 }) => new Promise((resolve, reject) => {
   const contract = createTokenContract(tokenContractAbi, tokenAddress);
 
-  console.log('delegateTokensRequest', {
-    account,
-    tokenAddress,
-    tokenContractAbi,
-  });
-
   // Delegate tokens
   contract.methods
     .delegate(DELEGATEE_ADDRESS)
     .send({ from: account })
     .then((response) => {
-      console.log(response);
+      window?.console.log(response);
     })
     .catch((e) => {
       window.console.log('Error occurred when delegating tokens');
@@ -179,7 +173,6 @@ export const delegateTokensRequest = ({
     .DelegateChanged()
     .on('data', (event) => {
       window.console.log({ event });
-      console.log(event);
 
       const { returnValues } = event;
       const { delegatee, toDelegate, delegator } = returnValues;

@@ -48,11 +48,6 @@ export default function DelegateBody() {
         tokenAddress,
       );
 
-      console.log({
-        parsedAbi,
-        pAddress,
-      });
-
       setProxyAddress(pAddress);
       setTokenContractAbi(parsedAbi);
 
@@ -104,8 +99,6 @@ export default function DelegateBody() {
           governorAddress,
           tokenBalance,
         };
-
-        console.log('backend call for delegation:', postPayload);
 
         axios
           .post(`${SERVICE_ENDPOINT}/delegate`, postPayload)
