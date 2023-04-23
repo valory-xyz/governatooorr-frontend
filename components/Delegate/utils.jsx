@@ -172,8 +172,6 @@ export const delegateTokensRequest = ({
   contract.events
     .DelegateChanged()
     .on('data', (event) => {
-      window.console.log({ event });
-
       const { returnValues } = event;
       const { delegatee, toDelegate, delegator } = returnValues;
       const otherDelegatee = toDelegate || delegatee;
