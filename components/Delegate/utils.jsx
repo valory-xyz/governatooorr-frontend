@@ -110,7 +110,7 @@ export const getTokenContractAbi = async (tokenAddress) => {
 
     // if the ABI does not have the delegate method, then throw an error
     if (!parsedAbi.find(({ name }) => name === 'delegate')) {
-      throw new Error('Delegate method not found in the ABI');
+      throw new Error('delegate method not found in the ABI');
     }
 
     // similarly for balanceOF
