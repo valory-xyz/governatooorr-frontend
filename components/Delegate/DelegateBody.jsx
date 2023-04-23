@@ -65,7 +65,7 @@ export default function DelegateBody() {
     if (account && tokenAddress) {
       updateTokenBalance();
     }
-  }, [tokenAddress]);
+  }, [account, tokenAddress]);
 
   const handleQueryCompleted = async (data) => {
     const uniqueGovernorBravoGovernors = getUniqueGovernorBravoGovernors(
