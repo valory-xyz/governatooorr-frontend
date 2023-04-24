@@ -1,101 +1,30 @@
-import { get, uniqBy } from 'lodash';
-import { useState } from 'react';
+import { get } from 'lodash';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import {
   Button, Card, Typography, Select, Radio,
 } from 'antd/lib';
 import axios from 'axios';
-import { getWeb3Details } from 'common-util/Contracts';
 import { notifyError, notifySuccess } from 'common-util/functions';
+import { SERVICE_ENDPOINT, SUPPORTED_CHAIN_IDS } from 'util/constants';
 import {
-  SERVICE_ENDPOINT,
-  SUPPORTED_CHAIN_IDS,
-  DELEGATEE_ADDRESS,
-  ACCEPTED_GOVERNOR_TYPES,
-} from 'util/constants';
+  QUERY,
+  getTokenContractAbi,
+  createTokenContract,
+  getUniqueGovernorBravoGovernors,
+  isSupportedTokenType,
+  delegateTokensRequest,
+} from './utils';
 
 const { Text, Title } = Typography;
-const { Option } = Select;
-
-const QUERY = gql`
-query Governors($chainIds: [ChainID!], $addresses: [Address!], $ids: [AccountID!], $includeInactive: Boolean, $pagination: Pagination, $sort: GovernorSort) {
-  governors(
-    chainIds: $chainIds
-    addresses: $addresses
-    ids: $ids
-    includeInactive: $includeInactive
-    pagination: $pagination
-    sort: $sort
-  ) {
-    id
-    type
-    name
-    slug
-    tokens {
-      address
-      name
-      symbol
-      type
-    }
-    proposalStats {
-      total
-      active
-      failed
-      passed
-    }
-  }
-}
-`;
-
-const getTokenContractAbi = async (tokenAddress) => {
-  const etherscanApiUrl = `https://api.etherscan.io/api?module=contract&action=getabi&address=${tokenAddress}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
-
-  try {
-    const response = await axios.get(etherscanApiUrl);
-
-    if (response.status !== 200) {
-      throw new Error(
-        `Error retrieving token contract ABI: Status ${response.status}`,
-      );
-    }
-
-    const stringedTokenContractAbi = response.data.result;
-    if (!stringedTokenContractAbi) {
-      throw new Error('Token contract ABI is empty');
-    }
-    return JSON.parse(stringedTokenContractAbi);
-  } catch (e) {
-    console.error('Error retrieving token contract ABI:', e);
-    throw new Error('Error retrieving token contract ABI');
-  }
-};
-
-const getFullTokenContractAbi = async (subTokenAddress) => {
-  const stringedTokenContractAbi = await getTokenContractAbi(subTokenAddress);
-  return stringedTokenContractAbi;
-};
-
-const createTokenContract = (tokenContractAbi) => {
-  const { web3 } = getWeb3Details();
-
-  // Check if tokenContractAbi is not empty
-  if (tokenContractAbi) {
-    return new web3.eth.Contract(tokenContractAbi);
-  }
-  throw new Error('Token contract ABI is empty');
-};
-
-const getUniqueGovernorBravoGovernors = (governors) => {
-  const filteredGovernors = governors
-    .filter((governor) => ACCEPTED_GOVERNOR_TYPES.includes(governor.type));
-
-  return uniqBy(filteredGovernors, 'id');
-};
 
 export default function DelegateBody() {
+  // proxy address can be token address or proxy contract address
+  const [proxyAddress, setProxyAddress] = useState('');
+
   const [tokenAddress, setTokenAddress] = useState('');
-  const [tokenContractAbi, setTokenContractAbi] = useState('');
+  const [tokenContractAbi, setTokenContractAbi] = useState(null);
   const [votingPreference, setVotingPreference] = useState('evil');
   const [delegating, setDelegating] = useState(false);
   const [availableTokens, setAvailableTokens] = useState([]);
@@ -105,41 +34,24 @@ export default function DelegateBody() {
 
   const account = useSelector((state) => get(state, 'setup.account'));
 
-  const handleQueryCompleted = async (data) => {
-    // eslint-disable-next-line max-len
-    const uniqueGovernorBravoGovernors = getUniqueGovernorBravoGovernors(data.governors);
-
-    setAvailableTokens(
-      uniqueGovernorBravoGovernors
-        .flatMap((governor) => governor.tokens)
-        .filter((token) => token.type === 'ERC20' && token.symbol !== ''),
-    );
-
-    setGovernors(uniqueGovernorBravoGovernors);
-  };
-
-  const assignGovernor = (selectedTokenAddress) => {
-    // eslint-disable-next-line max-len
-    const selectedGovernor = governors.find((governor) => governor.tokens.some((token) => token.address === selectedTokenAddress));
-    if (selectedGovernor && selectedTokenAddress) {
-      setGovernorAddress(selectedGovernor.id.split(':').pop());
-    }
-  };
-
-  const handleTokenAddressChange = async (selectedTokenAddress) => {
-    setTokenAddress(selectedTokenAddress);
-
-    // Get the governor ID for the selected token
-    assignGovernor(selectedTokenAddress);
-
-    const fullTokenContractAbi = await getFullTokenContractAbi(
-      selectedTokenAddress,
-    );
-    setTokenContractAbi(fullTokenContractAbi);
-
+  // if tokenAddress is not empty, fetch the token contract abi
+  useEffect(() => {
     const updateTokenBalance = async () => {
-      const tokenContract = createTokenContract(fullTokenContractAbi);
-      tokenContract.options.address = selectedTokenAddress;
+      // Get the governor ID for the selected token
+      // eslint-disable-next-line max-len
+      const selectedGovernor = governors.find(({ tokens }) => tokens.some((token) => token.address === tokenAddress));
+      if (selectedGovernor && tokenAddress) {
+        setGovernorAddress(selectedGovernor.id.split(':').pop());
+      }
+
+      const { parsedAbi, proxyAddress: pAddress } = await getTokenContractAbi(
+        tokenAddress,
+      );
+
+      setProxyAddress(pAddress);
+      setTokenContractAbi(parsedAbi);
+
+      const tokenContract = createTokenContract(parsedAbi, pAddress);
 
       try {
         const balance = await tokenContract.methods.balanceOf(account).call();
@@ -150,37 +62,36 @@ export default function DelegateBody() {
       }
     };
 
-    await updateTokenBalance();
+    if (account && tokenAddress) {
+      updateTokenBalance();
+    }
+  }, [account, tokenAddress]);
+
+  const handleQueryCompleted = async (data) => {
+    const uniqueGovernorBravoGovernors = getUniqueGovernorBravoGovernors(
+      data.governors,
+    );
+
+    setAvailableTokens(
+      uniqueGovernorBravoGovernors
+        .flatMap((governor) => governor.tokens)
+        .filter((token) => isSupportedTokenType(token) && token.symbol !== ''),
+    );
+
+    setGovernors(uniqueGovernorBravoGovernors);
   };
-
-  const handleVotingPreferenceChange = (event) => {
-    setVotingPreference(event.target.value);
-  };
-
-  const delegateTokens = () => new Promise((resolve, reject) => {
-    const contract = createTokenContract(tokenContractAbi);
-    contract.options.address = tokenAddress;
-
-    contract.methods
-      .delegate(DELEGATEE_ADDRESS)
-      .send({ from: account })
-      .then((response) => {
-        const id = get(response, 'events.Transfer.returnValues.id');
-        resolve(id);
-      })
-      .catch((e) => {
-        window.console.log('Error occurred when delegating tokens');
-        reject(e);
-      });
-  });
 
   const handleDelegate = async () => {
     try {
       setDelegating(true);
 
-      const id = await delegateTokens();
+      const isDelegated = await delegateTokensRequest({
+        account,
+        tokenContractAbi,
+        tokenAddress: proxyAddress,
+      });
 
-      if (id) {
+      if (isDelegated) {
         const postPayload = {
           address: account,
           delegatedToken: tokenAddress,
@@ -196,7 +107,7 @@ export default function DelegateBody() {
           })
           .catch((error) => {
             console.error('Error posting object:', error);
-            notifyError('Error: Could not complete delegation.'); // Display error message
+            notifyError('Error: Could not complete delegation.');
           })
           .finally(() => {
             setDelegating(false);
@@ -227,7 +138,7 @@ export default function DelegateBody() {
   });
 
   if (loading) {
-    return <div className="card form-card u-text-align-center">Loading...</div>;
+    return <Card className="form-card">Loading...</Card>;
   }
 
   if (error) {
@@ -239,16 +150,24 @@ export default function DelegateBody() {
     <>
       <Card className="form-card">
         <Title level={3}>Delegate</Title>
-        <div className="">
+
+        <div>
           <Text strong>Token to delegate</Text>
           <br />
-          <Select onChange={handleTokenAddressChange} value={tokenAddress} className="token-delegate-select">
-            {availableTokens.filter((token) => token.symbol !== '').map((token, i) => (
-              <Option key={`${token.address}-${i}`} value={token.address}>
-                {`${token.symbol} - ${token.name}`}
-              </Option>
-            ))}
-          </Select>
+          <Select
+            showSearch
+            onChange={(value) => setTokenAddress(value)}
+            value={tokenAddress}
+            className="token-delegate-select"
+            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+            options={availableTokens
+              .filter((token) => token.symbol !== '')
+              .map((token, i) => ({
+                key: `${token.address}-${i}`,
+                value: token.address,
+                label: `${token.symbol} - ${token.name}`,
+              }))}
+          />
         </div>
 
         <br />
@@ -258,7 +177,7 @@ export default function DelegateBody() {
           <br />
 
           <Radio.Group
-            onChange={handleVotingPreferenceChange}
+            onChange={(event) => setVotingPreference(event.target.value)}
             value={votingPreference}
           >
             <Radio value="good">Good</Radio>
@@ -270,9 +189,9 @@ export default function DelegateBody() {
 
         <Button
           type="primary"
-          onClick={() => handleDelegate()}
+          onClick={handleDelegate}
           loading={delegating}
-          disabled={!account}
+          disabled={!account || !tokenContractAbi || !tokenAddress}
         >
           Delegate
         </Button>
