@@ -45,6 +45,15 @@ const GlobalStyle = createGlobalStyle`
       color: ${NEW_PRIMARY_COLOR};
     }
   }
+
+  // Utilities
+  .mb-0 {
+    margin-bottom: 0 !important;
+  }
+  
+  .mb-12 {
+    margin-bottom: 12px !important;
+  }
 `;
 
 export default GlobalStyle;

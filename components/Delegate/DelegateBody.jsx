@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useQuery } from '@apollo/client';
 import {
-  Button, Card, Typography, Select, Radio,
+  Button, Card, Typography, Select, Radio, Alert,
 } from 'antd/lib';
 import axios from 'axios';
 import { notifyError, notifySuccess } from 'common-util/functions';
 import { SERVICE_ENDPOINT, SUPPORTED_CHAIN_IDS } from 'util/constants';
+import { EducationTitle } from 'components/Education';
 import {
   QUERY,
   getTokenContractAbi,
@@ -17,7 +18,7 @@ import {
   delegateTokensRequest,
 } from './utils';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 export default function DelegateBody() {
   // proxy address can be token address or proxy contract address
@@ -25,7 +26,7 @@ export default function DelegateBody() {
 
   const [tokenAddress, setTokenAddress] = useState('');
   const [tokenContractAbi, setTokenContractAbi] = useState(null);
-  const [votingPreference, setVotingPreference] = useState('evil');
+  const [votingPreference, setVotingPreference] = useState('good');
   const [delegating, setDelegating] = useState(false);
   const [availableTokens, setAvailableTokens] = useState([]);
   const [governorAddress, setGovernorAddress] = useState('');
@@ -149,7 +150,11 @@ export default function DelegateBody() {
   return (
     <>
       <Card className="form-card">
-        <Title level={3}>Delegate</Title>
+        <EducationTitle
+          title="Delegate"
+          level={3}
+          educationItemSlug="delegate"
+        />
 
         <div>
           <Text strong>Token to delegate</Text>
@@ -158,7 +163,7 @@ export default function DelegateBody() {
             showSearch
             onChange={(value) => setTokenAddress(value)}
             value={tokenAddress}
-            className="token-delegate-select"
+            className="token-delegate-select mb-12"
             filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
             options={availableTokens
               .filter((token) => token.symbol !== '')
@@ -167,6 +172,24 @@ export default function DelegateBody() {
                 value: token.address,
                 label: `${token.symbol} - ${token.name}`,
               }))}
+          />
+          <Alert
+            type="info"
+            description={(
+              <>
+                <Text>
+                  Looking for more tokens?
+                  <br />
+                  <a
+                    href="https://snapshot.org/#/delegate"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Delegate to governatooorr.eth on ⚡️ Snapshot
+                  </a>
+                </Text>
+              </>
+            )}
           />
         </div>
 

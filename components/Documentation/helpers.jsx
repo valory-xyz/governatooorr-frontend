@@ -4,10 +4,7 @@ import { WrapperDiv } from './styles';
 
 export const DOCS_SECTIONS = {
   overview: 'section-overview',
-  actions: 'section-actions',
-  badge: 'section-badge',
-  leaderboard: 'section-leaderboard',
-  'how-it-works': 'section-how-it-works',
+  delegate: 'delegate',
 };
 
 /**
