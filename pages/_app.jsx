@@ -3,20 +3,18 @@ import App from 'next/app';
 import { createWrapper } from 'next-redux-wrapper';
 import PropTypes from 'prop-types';
 
-import Web3 from 'web3';
-import { Web3ReactProvider } from '@web3-react/core';
-
-import { Web3DataProvider } from '@autonolas/frontend-library';
+import { WagmiConfig } from 'wagmi';
 import Meta from 'common-util/meta';
 import GlobalStyle from 'components/GlobalStyles';
 import Layout from 'components/Layout';
+
+/* eslint-disable-next-line import/no-extraneous-dependencies */
 import { ApolloProvider } from '@apollo/client';
+import { wagmiConfig } from 'common-util/Login/config';
 import client from '../apollo-client';
 import initStore from '../store';
 
 require('../styles/antd.less');
-
-const getLibrary = (provider) => new Web3(provider);
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
@@ -29,18 +27,17 @@ class MyApp extends App {
 
   render() {
     const { Component, pageProps } = this.props;
+    console.log('wagmiConfig', wagmiConfig);
 
     return (
       <ApolloProvider client={client}>
         <GlobalStyle />
         <Meta />
-        <Web3DataProvider>
-          <Web3ReactProvider getLibrary={getLibrary}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </Web3ReactProvider>
-        </Web3DataProvider>
+        <WagmiConfig config={wagmiConfig}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </WagmiConfig>
       </ApolloProvider>
     );
   }
