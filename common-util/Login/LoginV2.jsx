@@ -6,7 +6,7 @@ import {
   WagmiConfig, useAccount, useNetwork, useBalance,
 } from 'wagmi';
 import { COLOR } from '@autonolas/frontend-library';
-import { wagmiConfig, ethereumClient } from './config';
+import { projectId, wagmiConfig, ethereumClient } from './config';
 import { LoginContainer } from './styles';
 
 export const LoginV2 = ({
@@ -35,10 +35,10 @@ export const LoginV2 = ({
     },
   });
 
-  console.log({
-    wagmiConfig,
-    ethereumClient,
-  });
+  // console.log({
+  //   wagmiConfig,
+  //   ethereumClient,
+  // });
 
   return (
     <LoginContainer>
@@ -49,7 +49,7 @@ export const LoginV2 = ({
       </WagmiConfig>
 
       <Web3Modal
-        projectId={process.env.NEXT_PUBLIC_WALLET_PROJECT_ID}
+        projectId={projectId}
         ethereumClient={ethereumClient}
         themeMode={theme}
         themeVariables={{

@@ -22,14 +22,16 @@ export const chains = [
   polygonMumbai,
 ];
 
+export const projectId = process.env.NEXT_PUBLIC_WALLET_PROJECT_ID;
+
 const { publicClient } = configureChains(chains, [
-  w3mProvider({ projectId: process.env.NEXT_PUBLIC_WALLET_PROJECT_ID }),
+  w3mProvider({ projectId }),
 ]);
 
 export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: w3mConnectors({
-    projectId: process.env.NEXT_PUBLIC_WALLET_PROJECT_ID,
+    projectId,
     version: 2, // v2 of wallet connect
     chains,
   }),
