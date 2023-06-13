@@ -1,8 +1,8 @@
 import { COLOR } from '@autonolas/frontend-library';
 import { createGlobalStyle } from 'styled-components';
 
-const NEW_PRIMARY_COLOR = '#d62068';
-const NEW_SECONDARY_COLOR = '#051934';
+export const NEW_PRIMARY_COLOR = '#d62068';
+export const NEW_SECONDARY_COLOR = '#051934';
 
 // const GlobalStyle = styled.div`
 const GlobalStyle = createGlobalStyle`
