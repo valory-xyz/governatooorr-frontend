@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+/* eslint-disable-next-line import/no-extraneous-dependencies */
 import { useQuery } from '@apollo/client';
 import {
   Button, Card, Typography, Select, Radio,
