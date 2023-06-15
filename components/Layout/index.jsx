@@ -1,10 +1,7 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import {
-  Layout, Menu, Grid, Result,
-} from 'antd/lib';
+import { Layout, Grid, Result } from 'antd/lib';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { setIsVerified } from 'store/setup/actions';
@@ -18,7 +15,7 @@ import {
   SupportOnlyDesktop,
 } from './styles';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { useBreakpoint } = Grid;
 
 const menuItems = [{ key: 'docs', label: 'Docs' }];
