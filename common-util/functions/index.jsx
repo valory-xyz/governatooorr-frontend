@@ -1,4 +1,5 @@
 import { notification } from 'antd/lib';
+import data from '../../components/Education/data.json';
 
 export const notifyError = (message = 'Some error occured') => notification.error({
   message,
@@ -14,3 +15,5 @@ export const isGoerli = () => {
   if (typeof window === 'undefined') return false;
   return Number(window?.MODAL_PROVIDER?.chainId || 1) === 5;
 };
+
+export const getEducationItemByComponent = (slug) => data.filter((item) => slug === item.slug)[0];
