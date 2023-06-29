@@ -28,3 +28,7 @@ export const getMintContract = () => {
   );
   return contract;
 };
+
+export const rpc = {
+  1: process.env.NEXT_PUBLIC_MAINNET_URL,
+};
