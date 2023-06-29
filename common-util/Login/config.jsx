@@ -4,7 +4,7 @@ import {
   w3mProvider,
 } from '@web3modal/ethereum';
 import { configureChains, createConfig } from 'wagmi';
-import { mainnet, goerli } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
 import { SafeConnector } from 'wagmi/connectors/safe';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { rpc } from 'common-util/Contracts';
@@ -12,7 +12,7 @@ import { rpc } from 'common-util/Contracts';
 export const projectId = process.env.NEXT_PUBLIC_WALLET_PROJECT_ID;
 
 const { publicClient, webSocketPublicClient, chains } = configureChains(
-  [mainnet, goerli],
+  [mainnet],
   [
     jsonRpcProvider({
       rpc: (chain) => ({

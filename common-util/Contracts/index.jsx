@@ -31,5 +31,4 @@ export const getMintContract = () => {
 
 export const rpc = {
   1: process.env.NEXT_PUBLIC_MAINNET_URL,
-  5: process.env.NEXT_PUBLIC_GOERLI_URL,
 };
