@@ -24,6 +24,7 @@ const NavigationBar = ({ children }) => {
   const screens = useBreakpoint();
   const router = useRouter();
   const [selectedMenu, setSelectedMenu] = useState('homepage');
+  const [isServiceInfoMinimized, setServiceInfoMinized] = useState(true);
   const { pathname } = router;
 
   const dispatch = useDispatch();
@@ -91,7 +92,7 @@ const NavigationBar = ({ children }) => {
   }
 
   return (
-    <CustomLayout>
+    <CustomLayout isMinimized={isServiceInfoMinimized}>
       <Navbar
         logo={logo}
         selectedMenu={selectedMenu}
@@ -110,7 +111,9 @@ const NavigationBar = ({ children }) => {
         </div>
       </Content>
 
-      <Footer />
+      <Footer
+        onMinimizeToggle={() => setServiceInfoMinized(!isServiceInfoMinimized)}
+      />
     </CustomLayout>
   );
 };
