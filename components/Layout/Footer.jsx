@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { Typography } from 'antd/lib';
 import { ServiceStatusInfo } from '@autonolas/frontend-library';
 
@@ -44,8 +45,16 @@ const ExtraComponent = () => (
   </div>
 );
 
-const Footer = () => (
-  <ServiceStatusInfo extra={<ExtraComponent />} extraMd={<ExtraComponent />} />
+const Footer = ({ onMinimizeToggle }) => (
+  <ServiceStatusInfo
+    extra={<ExtraComponent />}
+    extraMd={<ExtraComponent />}
+    onMinimizeToggle={onMinimizeToggle}
+  />
 );
+
+Footer.propTypes = {
+  onMinimizeToggle: PropTypes.func.isRequired,
+};
 
 export default Footer;

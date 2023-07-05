@@ -3,6 +3,9 @@ import { Layout } from 'antd/lib';
 import { COLOR, MEDIA_QUERY } from '@autonolas/frontend-library';
 
 export const CustomLayout = styled(Layout)`
+  .site-layout {
+    padding: ${({ isMinimized }) => (isMinimized ? '0px 50px 80px' : '0px 50px 160px')};
+  }
   .registry-tabs {
     .ant-tabs-extra-content {
       &:not(:last-child) {

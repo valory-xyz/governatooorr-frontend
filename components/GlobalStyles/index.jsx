@@ -6,10 +6,6 @@ export const NEW_SECONDARY_COLOR = '#051934';
 
 // const GlobalStyle = styled.div`
 const GlobalStyle = createGlobalStyle`
-  .site-layout {
-    padding: 0px 50px 160px;
-  }
-
   .ant-layout-header {
     display: flex;
     position: fixed;
