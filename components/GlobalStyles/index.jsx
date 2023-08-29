@@ -28,8 +28,8 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .service-status-maximized {
-    background: ${NEW_SECONDARY_COLOR};
-    border-color: ${NEW_PRIMARY_COLOR};
+    background: ${NEW_SECONDARY_COLOR} !important;
+    border-color: ${NEW_PRIMARY_COLOR} !important;
     .status-sub-header {
       color: ${COLOR.WHITE};
     }
