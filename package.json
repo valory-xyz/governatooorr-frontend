@@ -11,7 +11,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.8.0",
     "@apollo/client": "^3.7.9",
-    "@autonolas/frontend-library": "^0.4.2",
+    "@autonolas/frontend-library": "^0.4.4",
     "@wagmi/core": "^1.0.5",
     "@web3modal/ethereum": "^2.4.5",
     "@web3modal/react": "^2.4.5",
