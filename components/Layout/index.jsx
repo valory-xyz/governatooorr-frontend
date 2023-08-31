@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import { Layout, Grid, Result } from 'antd/lib';
-import PropTypes from 'prop-types';
 import get from 'lodash/get';
+import PropTypes from 'prop-types';
 import { setIsVerified } from 'store/setup/actions';
 import Navbar from '../Navbar';
 import Login from '../Login';
-import Footer from './Footer';
 import {
   CustomLayout,
   Logo,
@@ -19,6 +19,9 @@ const { Content } = Layout;
 const { useBreakpoint } = Grid;
 
 const menuItems = [{ key: 'docs', label: 'Docs' }];
+const Footer = dynamic(() => import('./Footer'), {
+  ssr: false,
+});
 
 const NavigationBar = ({ children }) => {
   const screens = useBreakpoint();
