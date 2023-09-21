@@ -1,6 +1,6 @@
 const URLS = [
   'https://453734f64495a98c.agent.propel.autonolas.tech/healthcheck',
-  'l',
+  'https://b72085557196153b.agent.propel.autonolas.tech/healthcheck',
   'https://6ac61f0440937ef2.agent.propel.autonolas.tech/healthcheck',
   'https://957d300b1f939371.agent.propel.autonolas.tech/healthcheck',
 ];
@@ -41,7 +41,7 @@ const pollHealthCheckup = async () => new Promise((resolve, reject) => {
  * checks if the service is healthy and
  * polls for healthcheck every 2 seconds when backend is disrupted
  */
-export const isServiceHealthy = async () => {
+export const isServiceHealthyRequest = async () => {
   const { isHealthy, healthyAgentsCount } = await getHealthCheckData();
 
   if (isHealthy) {
@@ -55,28 +55,3 @@ export const isServiceHealthy = async () => {
   const { isHealthy: isHealthyAfterPolling } = await pollHealthCheckup();
   return isHealthyAfterPolling;
 };
-
-// const checkIfTransitioning = (responses) => {
-//   const responseWithTransitioning = responses.filter((x) => !!x.is_transitioning_fast);
-//   return responseWithTransitioning.length >= 3;
-// };
-
-// const pollUntilTransitioning = async () => {
-
-//   try {
-//   const isHealthy = await Promise.all(URLS.map(fetchUrl));
-
-//   } catch (error) {
-
-//   }
-
-//   fetchAllUrls(urls).then((responses) => {
-//     if (checkIfTransitioning(responses)) {
-//       console.log('Transitioning');
-//     } else {
-//       setTimeout(pollUntilTransitioning, 5000);
-//     }
-//   });
-// };
-
-// pollUntilTransitioning();
