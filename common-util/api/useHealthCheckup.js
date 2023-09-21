@@ -33,7 +33,7 @@ export const useApiPolling = (apiEndpoints, pollingInterval = 60 * 1000) => {
 
     // Cleanup the polling interval when the component unmounts
     return () => clearInterval(pollingTimer);
-  }, [pollingInterval]);
+  }, [apiEndpoints, pollingInterval]);
 
   const healthyServiceCount = data.filter((x) => !!x.is_transitioning_fast);
   const isHealthy = healthyServiceCount >= 3; /** If >= 3 agents are transitioning, then healthy */
