@@ -1,3 +1,6 @@
+import { notifyError } from 'common-util/functions';
+import { useEffect, useState } from 'react';
+
 const URLS = [
   'https://453734f64495a98c.agent.propel.autonolas.tech/healthcheck',
   'https://b72085557196153b.agent.propel.autonolas.tech/healthcheck',
@@ -54,4 +57,45 @@ export const isServiceHealthyRequest = async () => {
 
   const { isHealthy: isHealthyAfterPolling } = await pollHealthCheckup();
   return isHealthyAfterPolling;
+};
+
+/**
+ * useHealthCheckup hook to check if the service is healthy
+ * and poll for healthcheck every 2 seconds when backend is disrupted
+ */
+const useHealthCheckup = ({}) => {
+  const [isServiceHealthy, setIsServiceHealthy] = useState(null);
+
+  // fetch healthcheck on first render
+  useEffect(() => {
+    const checkServiceHealth = async () => {
+      try {
+        const response = await isServiceHealthyRequest();
+        setIsServiceHealthy(response);
+      } catch (error) {
+        notifyError('Error on fetching healthcheck');
+        console.error(error);
+      }
+    };
+
+    checkServiceHealth();
+  }, []);
+
+  // poll healthcheck every 1 minute
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await isServiceHealthyRequest();
+        setIsServiceHealthy(response);
+      } catch (error) {
+        notifyError('Error on fetching healthcheck');
+        setIsServiceHealthy(false);
+        console.error(error);
+      }
+    }, MINUTE);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return isServiceHealthy;
 };
