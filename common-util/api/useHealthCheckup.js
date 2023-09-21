@@ -16,8 +16,7 @@ export const useApiPolling = (apiEndpoints, pollingInterval = 60 * 1000) => {
   const fetchData = async () => {
     try {
       const responses = await Promise.all(apiEndpoints.map(fetchUrl));
-      const jsonData = await responses.json();
-      setData(jsonData);
+      setData(responses);
     } catch (error) {
       notifyError('Error fetching health checkup');
       console.error(error);
