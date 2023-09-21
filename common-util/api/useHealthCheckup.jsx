@@ -36,7 +36,7 @@ export const useApiPolling = (apiEndpoints, pollingInterval = 60 * 1000) => {
   }, [apiEndpoints, pollingInterval]);
 
   const healthyServiceCount = data.filter((x) => !!x.is_transitioning_fast);
-  const isHealthy = healthyServiceCount >= 3; /** If >= 3 agents are transitioning, then healthy */
+  const isHealthy = healthyServiceCount.length >= 3; /** If >= 3, then healthy */
 
   return { isHealthy, data };
 };
