@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { ServiceStatusInfo } from '@autonolas/frontend-library';
-import { useApiPolling } from 'common-util/api/useHook';
+import { useApiPolling } from 'common-util/api/useHealthCheckup';
 
 const MINUTE = 60 * 1000;
 
