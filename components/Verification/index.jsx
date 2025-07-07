@@ -8,7 +8,6 @@ import {
 import get from 'lodash/get';
 import { notifyError, notifySuccess } from 'common-util/functions';
 import { setIsVerified } from 'store/setup/actions';
-import Login from '../Login';
 import { getAddressStatus } from '../Layout/utils';
 import { verifyAddress, isRouteValid } from './utils';
 import { Ol } from './styles';
@@ -73,7 +72,7 @@ const Verification = () => {
                   </Button>
                 </>
               ) : (
-                <Login />
+                <div />
               )}
             </li>
 
