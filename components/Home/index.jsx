@@ -1,29 +1,39 @@
-import { Row, Col, Card } from 'antd/lib';
-import Delegate from 'components/Delegate';
-import MyDelegations from 'components/MyDelegations';
-import Proposals from 'components/Proposals';
-import { DELEGATEE_ADDRESS } from 'util/constants';
+import { Alert, Typography } from 'antd';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1rem;
+`;
+
+const AlertContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+`;
 
 const Home = () => (
-  <>
-    <Row gutter={12}>
-      <Col xs={24} lg={10}>
-        <Delegate />
-        <MyDelegations />
-
-        <Card className="form-card">
-          {`Donate ETH for gas: ${DELEGATEE_ADDRESS}`}
-        </Card>
-      </Col>
-      <Col xs={24} lg={14}>
-        <Proposals />
-      </Col>
-    </Row>
-
-    <Row>
-      <Col xs={24} lg={24} />
-    </Row>
-  </>
+  <Container>
+    <AlertContainer>
+      <Alert
+        message="This app has been deprecated and is no longer supported."
+        showIcon
+      />
+    </AlertContainer>
+    <Typography.Text>
+      Please head over to
+      {' '}
+      <a href="https://olas.network/" target="_blank" rel="noopener noreferrer">
+        Olas
+      </a>
+      {' '}
+    </Typography.Text>
+  </Container>
 );
 
 export default Home;

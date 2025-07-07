@@ -3,9 +3,19 @@ import { Layout } from 'antd/lib';
 import { COLOR, MEDIA_QUERY } from '@autonolas/frontend-library';
 
 export const CustomLayout = styled(Layout)`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
   .site-layout {
-    padding: ${({ isMinimized }) => (isMinimized ? '0px 50px 80px' : '0px 50px 160px')};
+    padding: 0px 50px 160px;
   }
+
+  .site-layout-background {
+    height: 100%;
+  }
+
   .registry-tabs {
     .ant-tabs-extra-content {
       &:not(:last-child) {

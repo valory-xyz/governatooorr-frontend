@@ -1,12 +1,20 @@
-import PropTypes from 'prop-types';
-import { ServiceStatusInfo } from '@autonolas/frontend-library';
+import { Typography } from 'antd';
+import styled from 'styled-components';
 
-const Footer = ({ onMinimizeToggle }) => (
-  <ServiceStatusInfo appType="govkit" onMinimizeToggle={onMinimizeToggle} />
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+`;
+
+const Footer = () => (
+  <Container>
+    <Typography.Paragraph>
+      {`© Olas (aka Autonolas) DAO ${new Date().getFullYear()}`}
+      {' '}
+    </Typography.Paragraph>
+  </Container>
 );
-
-Footer.propTypes = {
-  onMinimizeToggle: PropTypes.func.isRequired,
-};
 
 export default Footer;
