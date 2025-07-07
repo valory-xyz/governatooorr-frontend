@@ -11,4 +11,18 @@ module.exports = {
     },
   }),
   publicRuntimeConfig: {},
+  async redirects() {
+    return [
+      {
+        source: '/docs',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/verification',
+        destination: '/',
+        permanent: true,
+      },
+    ];
+  },
 };
