@@ -1,29 +1,42 @@
-import { Row, Col, Card } from 'antd/lib';
-import Delegate from 'components/Delegate';
-import MyDelegations from 'components/MyDelegations';
-import Proposals from 'components/Proposals';
-import { DELEGATEE_ADDRESS } from 'util/constants';
+import { COLOR } from '@autonolas/frontend-library';
+import { Card, Typography } from 'antd';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .ant-card {
+    border: 1px solid #d62068;
+    background-color rgb(5, 25, 52);
+  }
+
+  .ant-typography {
+    color: ${COLOR.WHITE};
+    text-align: center;
+    display: block;
+  }
+`;
 
 const Home = () => (
-  <>
-    <Row gutter={12}>
-      <Col xs={24} lg={10}>
-        <Delegate />
-        <MyDelegations />
-
-        <Card className="form-card">
-          {`Donate ETH for gas: ${DELEGATEE_ADDRESS}`}
-        </Card>
-      </Col>
-      <Col xs={24} lg={14}>
-        <Proposals />
-      </Col>
-    </Row>
-
-    <Row>
-      <Col xs={24} lg={24} />
-    </Row>
-  </>
+  <Container>
+    <Card>
+      <Typography.Title level={3}>
+        This app has been deprecated and is no longer supported.
+      </Typography.Title>
+      <Typography.Text>
+        Please head over to
+        {' '}
+        <a href="https://olas.network/" target="_blank" rel="noopener noreferrer">
+          Olas
+        </a>
+        {' '}
+      </Typography.Text>
+    </Card>
+  </Container>
 );
 
 export default Home;
