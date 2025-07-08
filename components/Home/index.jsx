@@ -1,4 +1,5 @@
-import { Alert, Typography } from 'antd';
+import { COLOR } from '@autonolas/frontend-library';
+import { Card, Typography } from 'antd';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -7,36 +8,34 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  gap: 1rem;
 
-  .ant-alert {
-    font-size: 16px;
+  .ant-card {
+    border: 1px solid #d62068;
+    background-color rgb(5, 25, 52);
   }
-`;
 
-const AlertContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: default;
+  .ant-typography {
+    color: ${COLOR.WHITE};
+    text-align: center;
+    display: block;
+  }
 `;
 
 const Home = () => (
   <Container>
-    <AlertContainer>
-      <Alert
-        message="This app has been deprecated and is no longer supported."
-        showIcon
-      />
-    </AlertContainer>
-    <Typography.Text>
-      Please head over to
-      {' '}
-      <a href="https://olas.network/" target="_blank" rel="noopener noreferrer">
-        Olas
-      </a>
-      {' '}
-    </Typography.Text>
+    <Card>
+      <Typography.Title level={3}>
+        This app has been deprecated and is no longer supported.
+      </Typography.Title>
+      <Typography.Text>
+        Please head over to
+        {' '}
+        <a href="https://olas.network/" target="_blank" rel="noopener noreferrer">
+          Olas
+        </a>
+        {' '}
+      </Typography.Text>
+    </Card>
   </Container>
 );
 
